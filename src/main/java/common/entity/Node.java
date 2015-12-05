@@ -1,11 +1,13 @@
-package dictTrie.treeT;
+package common.entity;
 
 import com.google.common.collect.Lists;
-import dictTrie.enums.NodeType;
+import common.enums.TreeNodeType;
 
 import java.util.List;
 
 /**
+ * 搜索树节点类
+ *
  * @Auther wanglp
  * @Time 15/11/22 下午11:31
  * @Email wanglp840@nenu.edu.cn
@@ -13,11 +15,16 @@ import java.util.List;
 
 public class Node implements Comparable<Node>{
 
+    // 汉字编号
     public int code = 0;
+    // 字
     public String value = null;
+    // 子节点
     public List<Node> childNodeList = Lists.newArrayList();
 
-    public NodeType nodeType = null;
+    // 节点类别
+    public TreeNodeType treeNodeType = null;
+    // 节点的权重（叶子节点）
     public double weight = 0.0;
 
     public Node(int code, String value){

@@ -16,8 +16,9 @@
     </form>--%>
 
     <form action="${website}public/search" method="post">
-            <input id="q" type="text" name="q">
-            <input id="search" type="submit" value="查询">
+        <input id="q" name="q" class="search_input" type="text" placeholder="请输入汉字词句" autocomplete="off"
+                 style="color: rgb(153, 153, 153);" value="">
+        <input id="search" class="search_submit" type="submit" value="查询">
     </form>
 
 

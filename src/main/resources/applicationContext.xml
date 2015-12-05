@@ -13,8 +13,9 @@
 
     <!-- 注解类使用   bean包的自动扫描 -->
     <context:annotation-config/>
-    <context:component-scan base-package="dictTrie.treeT" />
-    <context:component-scan base-package="web" />
+
+    <context:component-scan base-package="service"/>
+    <context:component-scan base-package="web"/>
 
 
     <mvc:annotation-driven />

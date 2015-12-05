@@ -1,11 +1,10 @@
-import dictTrie.data.DataInput;
-import dictTrie.data.DataUtils;
-import dictTrie.enums.SearchType;
-import dictTrie.treeT.Node;
-import dictTrie.treeT.TreeService;
+import common.data.DataUtils;
+import common.enums.SearchType;
+import common.entity.Node;
+import common.other.TreeUsedData;
+import service.TreeService;
 
 import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -20,32 +19,32 @@ public class Main {
     public static void main(String[] args) throws Exception{
 
         TreeService treeService = new TreeService();
-        final DataUtils dataUtils = new DataUtils();
+        final TreeUsedData treeUsedData = new TreeUsedData();
 
         // 数据获取
-        DataInput.getTheData();
+        DataUtils.getTheData();
 
         // 创建一颗树
         Node rootNode = new Node(-1, " ");
-        rootNode = treeService.buildDictTree(DataInput.allStrList, rootNode, DataInput.weightMap, DataInput.strCode);
+        rootNode = treeService.buildDictTree(DataUtils.allWordList, rootNode, DataUtils.wordWeightMap, DataUtils.characterCodeMap);
 
         // 设置当前树使用的数据
-        dataUtils.setAllStrList(DataInput.allStrList);
-        dataUtils.setWeightMap(DataInput.weightMap);
-        dataUtils.setStrCode(DataInput.strCode);
-        dataUtils.setRootNode(rootNode);
+        treeUsedData.setAllWordList(DataUtils.allWordList);
+        treeUsedData.setWordWeightMap(DataUtils.wordWeightMap);
+        treeUsedData.setCharacterCodeMap(DataUtils.characterCodeMap);
+        treeUsedData.setRootNode(rootNode);
 
-        treeService.setDataUsed(dataUtils);
+        treeService.setDataUsed(treeUsedData);
 
 
 
 
         // 测试词语完全匹配
-        System.out.println(treeService.fullMatch("打豆豆"));
+        System.out.println(treeService.isWordFullMath("打豆豆"));
 
         List<String> tmpList;
         System.out.println("--------打豆豆的前缀匹配");
-        tmpList = treeService.prefixWordsTop("打豆豆", SearchType.SEARCH_TOP, 5);
+        tmpList = treeService.prefixWordTopList("打豆豆", SearchType.SEARCH_TOP, 5);
         if (tmpList.size() == 0){
             System.out.println("没有可以匹配的啊啊");
         }else {
@@ -53,7 +52,7 @@ public class Main {
         }
 
         System.out.println("--------我是好处 的前缀匹配");
-        tmpList = treeService.prefixWordsTop("我是好处", SearchType.SEARCH_TOP, 5);
+        tmpList = treeService.prefixWordTopList("我是好处", SearchType.SEARCH_TOP, 5);
         if (tmpList.size() == 0){
             System.out.println("没有可以匹配的啊啊");
         }else {
@@ -61,7 +60,7 @@ public class Main {
         }
 
         System.out.println("--------我是好词 的前缀匹配");
-        tmpList = treeService.prefixWordsTop("我是好词", SearchType.SEARCH_TOP, 5);
+        tmpList = treeService.prefixWordTopList("我是好词", SearchType.SEARCH_TOP, 5);
         if (tmpList.size() == 0){
             System.out.println("没有可以匹配的啊啊");
         }else {

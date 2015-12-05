@@ -1,14 +1,14 @@
 package web.controller;
 
 import com.google.common.collect.Lists;
-import dictTrie.enums.SearchType;
-import dictTrie.other.URLConstants;
-import dictTrie.treeT.TreeService;
+import common.enums.SearchType;
+import common.other.URLConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import service.TreeService;
 
 import java.util.List;
 
@@ -24,14 +24,14 @@ import java.util.List;
 public class SearchController {
 
     @Autowired
-    private TreeService tree;
+    private TreeService treeService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public String search(String q, Model model){
+    public String search(String q, Model model) {
         List<String> words = Lists.newArrayList();
 
-        if (!q.equals("")){
-            words = tree.prefixWordsTop(q, SearchType.SEARCH_TOP, 10);
+        if (!q.equals("")) {
+            words = treeService.prefixWordTopList(q, SearchType.SEARCH_TOP, 10);
 
             model.addAttribute("queryWords", words);
         }

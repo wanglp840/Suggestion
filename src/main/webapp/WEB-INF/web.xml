@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          version="2.5">
-    <display-name>exercise</display-name>
+    <display-name>Suggestion</display-name>
 
     <!-- encode filter -->
     <filter>
@@ -18,7 +18,6 @@
             <param-value>true</param-value>
         </init-param>
     </filter>
-
     <filter-mapping>
         <filter-name>characterEncodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -27,9 +26,8 @@
     <!-- 常量 filter -->
     <filter>
         <filter-name>constantsFile</filter-name>
-        <filter-class>web.filter.ConstantsFilter</filter-class>
+        <filter-class>web.filter.WebConstantsFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>constantsFile</filter-name>
         <url-pattern>/*</url-pattern>
@@ -39,7 +37,6 @@
         <filter-name>HiddenHttpMethodFilter</filter-name>
         <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>HiddenHttpMethodFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -61,6 +58,22 @@
         <servlet-name>exercise Dispatcher Servlet</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+
+
+    <!--Log4j 相关的配置-->
+    <!--<context-param>
+        <param-name>log4jConfigLocation</param-name>
+        <param-value>/WEB-INF/props/Log4j.properties</param-value>
+    </context-param>-->
+    <context-param>
+        <param-name>log4jRefreshInterval</param-name>
+        <param-value>6000</param-value>
+    </context-param>
+    <listener>
+        <listener-class>
+            org.springframework.web.util.Log4jConfigListener
+        </listener-class>
+    </listener>
 
 
 </web-app>

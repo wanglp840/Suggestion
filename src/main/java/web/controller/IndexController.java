@@ -1,6 +1,6 @@
 package web.controller;
 
-import dictTrie.other.URLConstants;
+import common.other.URLConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

@@ -1,6 +1,8 @@
-package dictTrie.other;
+package common.other;
 
 /**
+ * url请求地址常量
+ *
  * @Auther wanglp
  * @Time 15/12/4 下午11:06
  * @Email wanglp840@nenu.edu.cn

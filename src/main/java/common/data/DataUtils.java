@@ -1,38 +1,45 @@
-package dictTrie.data;
+package common.data;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.sun.org.apache.xerces.internal.xs.StringList;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
+ * 数据处理类-获取处理数据
+ *
  * @Auther wanglp
  * @Time 15/11/23 上午12:11
  * @Email wanglp840@nenu.edu.cn
  */
 
-public class DataInput {
-    private static String  tmpFileName = DataInput.class.getClassLoader().getResource("test1").getFile();
+public class DataUtils {
+    private static Logger logger = Logger.getLogger(DataUtils.class.getName());
+
+    // 数据文件
+    private static String  fileName = DataUtils.class.getClassLoader().getResource("test1").getFile();
 
     // 词
-    public static List<String> allStrList = Lists.newArrayList();
-
+    public static List<String> allWordList = Lists.newArrayList();
     // 词－权重
-    public static Map<String, Double> weightMap = Maps.newHashMap();
+    public static Map<String, Double> wordWeightMap = Maps.newHashMap();
     // 字－code
-    public static Map<Character, Integer> strCode = Maps.newHashMap();
+    public static Map<Character, Integer> characterCodeMap = Maps.newHashMap();
 
 
+    /**
+     * 读取数据
+     */
     static BufferedReader bufferedReader = null;
     public static void getTheData(){
         // －－－－－词  词－权重
         try {
-            bufferedReader = new BufferedReader(new FileReader(new File(tmpFileName)));
+            bufferedReader = new BufferedReader(new FileReader(new File(fileName)));
             String content;
 
             while ((content = bufferedReader.readLine()) != null){
@@ -44,17 +51,20 @@ public class DataInput {
 
                 try {
                     double weight = Double.parseDouble(line[1]);
-                    if (!allStrList.contains(line[0])) {
-                        allStrList.add(line[0]);
-                        weightMap.put(line[0], weight);
+                    if (!allWordList.contains(line[0])) {
+                        allWordList.add(line[0]);
+                        wordWeightMap.put(line[0], weight);
                     }
                 }catch (NumberFormatException e){
                     e.printStackTrace();
+                    logger.info(e.getMessage());
+
                     continue;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+            logger.info(e.getMessage());
         }finally {
             try {
                 if (bufferedReader != null){
@@ -62,17 +72,18 @@ public class DataInput {
                 }
             }catch (Exception e){
                 e.printStackTrace();
+                logger.info(e.getMessage());
             }
         }
 
 
         // －－－－－字－code
         int code = 0;
-        for (String str : allStrList){
+        for (String str : allWordList){
             char[] charArr = str.toCharArray();
             for (char ch : charArr){
-                if(strCode.get(ch) == null){
-                    strCode.put(ch, code++);
+                if(characterCodeMap.get(ch) == null){
+                    characterCodeMap.put(ch, code++);
                 }
             }
         }
