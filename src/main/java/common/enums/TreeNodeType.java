@@ -16,7 +16,8 @@ public enum TreeNodeType {
     private Integer id;
     private String desc;
 
-    TreeNodeType(Integer id, String desc){
+
+    TreeNodeType(Integer id, String desc) {
         this.id = id;
         this.desc = desc;
     }

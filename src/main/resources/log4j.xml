@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<!-- appender -->
+	<appender name="console_appender" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-d{yyyy-MM-dd HH:mm:ss,SSS} [%c]-[%p] %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="monitor_appender" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="${catalina.home}/logs/suggestion/monitor.log"/>
+		<!--<param name="File" value="../logs/Suggestion/monitor.log"/>-->
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-d{yyyy-MM-dd HH:mm:ss,SSS} [%c]-[%p] %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="biz_file_appender" class="org.apache.log4j.DailyRollingFileAppender">
+		<!--<param name="File" value="${catalina.home}/logs/suggestion/biz.log"/>-->
+		<param name="File" value="../logs/Suggestion/bizlog"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%-5p] [%d{HH:mm:ss}] %c - %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="stdout_file_appender" class="org.apache.log4j.DailyRollingFileAppender">
+		<!--<param name="File" value="${catalina.home}/logs/suggestion/stdout.log"/>-->
+		<param name="File" value="../logs/Suggestion/stdout.log"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%-5p] [%d{HH:mm:ss}] %c - %m%n"/>
+		</layout>
+	</appender>
+
+	<appender name="sql_file_appender" class="org.apache.log4j.DailyRollingFileAppender">
+		<!--<param name="File" value="${catalina.home}/logs/suggestion/sql.log"/>-->
+		<param name="File" value="../logs/Suggestion/sql.log"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%-5p] [%d{HH:mm:ss}] %c - %m%n"/>
+		</layout>
+	</appender>
+
+	<appender name="error_file_appender" class="org.apache.log4j.DailyRollingFileAppender">
+		<!--<param name="File" value="${catalina.home}/logs/suggestion/stderr.log"/>-->
+		<param name="File" value="../logs/Suggestion/stderr.log"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%-5p] [%d{HH:mm:ss}] %c - %m%n"/>
+		</layout>
+	</appender>
+
+	<root>
+		<level value="error"/>
+		<appender-ref ref="console_appender"/>
+		<appender-ref ref="monitor_appender"/>
+		<appender-ref ref="biz_file_appender"/>
+		<appender-ref ref="stdout_file_appender"/>
+		<appender-ref ref="sql_file_appender"/>
+		<appender-ref ref="error_file_appender"/>
+	</root>
+
+</log4j:configuration>

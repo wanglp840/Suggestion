@@ -2,13 +2,12 @@ package common.data;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import common.other.PropertiesConstants;
+import org.apache.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * 数据处理类-获取处理数据
@@ -22,7 +21,7 @@ public class DataUtils {
     private static Logger logger = Logger.getLogger(DataUtils.class.getName());
 
     // 数据文件
-    private static String  fileName = DataUtils.class.getClassLoader().getResource("test1").getFile();
+    private static String  fileName = DataUtils.class.getClassLoader().getResource(PropertiesConstants.dataSourceFileName).getFile();
 
     // 词
     public static List<String> allWordList = Lists.newArrayList();
@@ -37,6 +36,7 @@ public class DataUtils {
      */
     static BufferedReader bufferedReader = null;
     public static void getTheData(){
+        System.out.println("文件位置：" + fileName);
         // －－－－－词  词－权重
         try {
             bufferedReader = new BufferedReader(new FileReader(new File(fileName)));
@@ -57,22 +57,21 @@ public class DataUtils {
                     }
                 }catch (NumberFormatException e){
                     e.printStackTrace();
-                    logger.info(e.getMessage());
-
+                    logger.error(e.getMessage());
                     continue;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.info(e.getMessage());
-        }finally {
+            logger.error(e.getMessage());
+        } finally {
             try {
                 if (bufferedReader != null){
                     bufferedReader.close();
                 }
             }catch (Exception e){
                 e.printStackTrace();
-                logger.info(e.getMessage());
+                logger.error(e.getMessage());
             }
         }
 

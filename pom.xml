@@ -51,10 +51,20 @@
             <version>18.0</version>
         </dependency>
 
-        <!--slf4j-Log4j驱动包  会自动添加三个对应包 -->
+        <!--slf4j-Log4j驱动包  会自动添加4个对应包 -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
+            <version>1.6.6</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
             <version>1.6.6</version>
         </dependency>
 

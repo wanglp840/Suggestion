@@ -2,13 +2,14 @@ package service;
 
 import common.data.DataUtils;
 import common.entity.Node;
+import common.other.PropertiesConstants;
 import common.other.TreeUsedData;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.util.logging.Logger;
 
 /**
  * @Auther wanglp
@@ -16,13 +17,13 @@ import java.util.logging.Logger;
  * @Email wanglp840@nenu.edu.cn
  */
 
-@Service("treeInit")
+@Service("treeInitService")
 public class TreeInitService {
-    Logger logger = Logger.getLogger(TreeService.class.getName());
 
     @Autowired
     private TreeService treeService;
 
+    Logger logger = Logger.getLogger(TreeInitService.class.getName());
 
     // -----------------字典树的创建和更新启动
     @PostConstruct
@@ -50,12 +51,12 @@ public class TreeInitService {
         new Thread(new Runnable() {
             public void run() {
                 // 文件版本号
-                long fileVersion = new File(TreeInitService.class.getClassLoader().getResource("test1").getFile()).lastModified();
+                long fileVersion = new File(TreeInitService.class.getClassLoader().getResource(PropertiesConstants.dataSourceFileName).getFile()).lastModified();
 
                 while (true) {
                     try {
                         // 文件更新版本号
-                        long fileUpdatedVersion = new File(TreeService.class.getClassLoader().getResource("test1").getFile()).lastModified();
+                        long fileUpdatedVersion = new File(TreeService.class.getClassLoader().getResource(PropertiesConstants.dataSourceFileName).getFile()).lastModified();
                         if (fileUpdatedVersion != fileVersion) {
                             System.out.println("文件有变化，正在重新生成新的树");
 
@@ -79,8 +80,7 @@ public class TreeInitService {
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                        logger.info("更新树的线程出错了");
-                        logger.info(e.getMessage());
+                        logger.error(e.getMessage());
                     }
                 }
             }

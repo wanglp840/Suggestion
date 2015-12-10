@@ -8,7 +8,7 @@
        default-autowire="byName" default-lazy-init="false">
 
     <!-- 加载基础配置文件 -->
-    <context:property-placeholder location="classpath*:wlp_exercise.properties" />
+    <context:property-placeholder location="classpath*:wlp_suggestion.properties" />
 
 
     <!-- 注解类使用   bean包的自动扫描 -->
