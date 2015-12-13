@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import common.other.PropertiesConstants;
 import org.apache.log4j.Logger;
 
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
@@ -20,9 +21,6 @@ import java.util.Map;
 public class DataUtils {
     private static Logger logger = Logger.getLogger(DataUtils.class.getName());
 
-    // 数据文件
-    private static String  fileName = DataUtils.class.getClassLoader().getResource(PropertiesConstants.dataSourceFileName).getFile();
-
     // 词
     public static List<String> allWordList = Lists.newArrayList();
     // 词－权重
@@ -31,14 +29,17 @@ public class DataUtils {
     public static Map<Character, Integer> characterCodeMap = Maps.newHashMap();
 
 
-    /**
-     * 读取数据
-     */
-    static BufferedReader bufferedReader = null;
     public static void getTheData(){
-        System.out.println("文件位置：" + fileName);
+        // 清空上次数据
+        allWordList.clear();
+        wordWeightMap.clear();
+        characterCodeMap.clear();
+
         // －－－－－词  词－权重
+        BufferedReader bufferedReader = null;
         try {
+            // 数据文件
+            String  fileName = DataUtils.class.getClassLoader().getResource(PropertiesConstants.dataSourceFileName).getFile();
             bufferedReader = new BufferedReader(new FileReader(new File(fileName)));
             String content;
 
@@ -63,7 +64,7 @@ public class DataUtils {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.getMessage());
+            logger.error("读取数据文件内容读取失败，" + e.getMessage());
         } finally {
             try {
                 if (bufferedReader != null){

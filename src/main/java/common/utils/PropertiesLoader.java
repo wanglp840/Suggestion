@@ -78,7 +78,7 @@ public class PropertiesLoader {
         return value == null ? defaultObject : value;
     }
 
-    // 为空事返回空值
+    // 为空 返回空值 后改为返回“”
     public Object getProperty(String key){
         return this.getProperty(key, (Object) null);
     }
