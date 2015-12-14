@@ -19,6 +19,10 @@ public class Node implements Comparable<Node>{
     public int code = 0;
     // 字
     public String value = null;
+    // 拼音
+    public String pinyin = "";
+    // 简拼
+    public char jianpin = ' ';
     // 子节点
     public List<Node> childNodeList = Lists.newArrayList();
 
@@ -27,9 +31,19 @@ public class Node implements Comparable<Node>{
     // 节点的权重（叶子节点）
     public double weight = 0.0;
 
+
+    // 查询只需使用code，和根节点使用
     public Node(int code, String value){
         this.code = code;
         this.value = value;
+    }
+
+    // 插入词时使用
+    public Node(int code, String value, String pinyin, char jianpin){
+        this.code = code;
+        this.value = value;
+        this.pinyin = pinyin;
+        this.jianpin = jianpin;
     }
 
 

@@ -1,4 +1,4 @@
-import common.data.DataUtils;
+import common.data.Data;
 import common.enums.SearchType;
 import common.entity.Node;
 import common.other.TreeUsedData;
@@ -19,24 +19,6 @@ public class Main {
     public static void main(String[] args) throws Exception{
 
         TreeService treeService = new TreeService();
-        final TreeUsedData treeUsedData = new TreeUsedData();
-
-        // 数据获取
-        DataUtils.getTheData();
-
-        // 创建一颗树
-        Node rootNode = new Node(-1, " ");
-        rootNode = treeService.buildDictTree(DataUtils.allWordList, rootNode, DataUtils.wordWeightMap, DataUtils.characterCodeMap);
-
-        // 设置当前树使用的数据
-        treeUsedData.setAllWordList(DataUtils.allWordList);
-        treeUsedData.setWordWeightMap(DataUtils.wordWeightMap);
-        treeUsedData.setCharacterCodeMap(DataUtils.characterCodeMap);
-        treeUsedData.setRootNode(rootNode);
-
-        treeService.setDataUsed(treeUsedData);
-
-
 
 
         // 测试词语完全匹配

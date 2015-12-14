@@ -27,42 +27,33 @@ public class TreeService {
     TreeUsedData treeUsedData = new TreeUsedData();
 
     /**
-     * 初始化数据
+     * 设置搜索树数据
      * @param treeUsedData
      */
     public void setDataUsed(TreeUsedData treeUsedData){
         this.treeUsedData = treeUsedData;
     }
 
-    /**
-     * 创建一棵树
-     * @param
-     */
-    public Node buildDictTree(List<String> wordList, Node rootNode, Map<String, Double> wordWeightMap, Map<Character, Integer> characterCodeMap){
-        for (String word : wordList){
-            this.insertWordToTree(word, rootNode, wordWeightMap, characterCodeMap);
-        }
-        return rootNode;
-    }
 
     /**
      * 插入词语
      * @param word
      */
-    private void insertWordToTree(String word, Node rootNode, Map<String, Double> wordWeightMap, Map<Character, Integer> characterCodeMap) {
+    public void insertWordToTree(Node rootNode, String word, String pinyin, Double weight, Map<Character, Integer> characterCodeMap) {
         Node curNode = rootNode;
 
         char[] characterArr = word.toCharArray();
+        String[] pyArr = pinyin.split(" ");
         for (int i = 0; i < characterArr.length; i++) {
 
             // 获取该汉字的code值 生成新节点
             int code = characterCodeMap.get(characterArr[i]);
-            Node tmpInsertNode = new Node(code, String.valueOf(characterArr[i]));
+            Node tmpInsertNode = new Node(code, String.valueOf(characterArr[i]), pyArr[i], pyArr[i].charAt(0));
 
             // 结束字 设置叶节点标识 存储权重值
             if (i == characterArr.length - 1) {
                 tmpInsertNode.treeNodeType = TreeNodeType.LEAF;
-                tmpInsertNode.weight = wordWeightMap.get(word);
+                tmpInsertNode.weight = weight;
             }
 
             // 查看其是否已经存在
@@ -78,7 +69,7 @@ public class TreeService {
 
 
     /**
-     * 查看某个词语是否完全匹配
+     * 查看某个词语是否完全匹配-暂只支持汉字
      * @param word
      * @return
      */

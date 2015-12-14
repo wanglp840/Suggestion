@@ -17,10 +17,6 @@ public class TreeUsedData {
     // 根节点
     private Node rootNode;
 
-    // 词
-    private List<String> allWordList;
-    // 词－权重
-    private Map<String, Double> wordWeightMap;
     // 字－code
     private Map<Character, Integer> characterCodeMap;
 
@@ -31,22 +27,6 @@ public class TreeUsedData {
 
     public void setRootNode(Node rootNode) {
         this.rootNode = rootNode;
-    }
-
-    public List<String> getAllWordList() {
-        return allWordList;
-    }
-
-    public void setAllWordList(List<String> allWordList) {
-        this.allWordList = allWordList;
-    }
-
-    public Map<String, Double> getWordWeightMap() {
-        return wordWeightMap;
-    }
-
-    public void setWordWeightMap(Map<String, Double> wordWeightMap) {
-        this.wordWeightMap = wordWeightMap;
     }
 
     public Map<Character, Integer> getCharacterCodeMap() {
