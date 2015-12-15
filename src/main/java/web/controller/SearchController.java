@@ -1,7 +1,6 @@
 package web.controller;
 
 import com.google.common.collect.Lists;
-import common.enums.SearchType;
 import common.other.URLConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -31,7 +30,7 @@ public class SearchController {
         List<String> words = Lists.newArrayList();
 
         if (!q.equals("")) {
-            words = treeService.prefixWordTopList(q, SearchType.SEARCH_TOP, 10);
+            words = treeService.prefixWordTopList(q);
 
             model.addAttribute("queryWords", words);
         }

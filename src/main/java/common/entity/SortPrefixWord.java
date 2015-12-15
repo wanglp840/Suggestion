@@ -18,4 +18,24 @@ public class SortPrefixWord {
         this.word = word;
         this.weight = weight;
     }
+
+
+    public boolean equals(Object o){
+        if (this == o){
+            return true;
+        }
+        if (o == null){
+            return false;
+        }
+        if (getClass() != o.getClass()){
+            return false;
+        }
+
+        SortPrefixWord sortPrefixWord = (SortPrefixWord)o;
+        if (word.equals(sortPrefixWord.word)){
+            return true;
+        }else {
+            return false;
+        }
+    }
 }

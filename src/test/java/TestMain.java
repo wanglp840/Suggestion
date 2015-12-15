@@ -1,7 +1,3 @@
-import common.data.Data;
-import common.enums.SearchType;
-import common.entity.Node;
-import common.other.TreeUsedData;
 import service.TreeService;
 
 import java.util.List;
@@ -13,7 +9,7 @@ import java.util.List;
  * @Email wanglp840@nenu.edu.cn
  */
 
-public class Main {
+public class TestMain {
 
 
     public static void main(String[] args) throws Exception{
@@ -26,7 +22,7 @@ public class Main {
 
         List<String> tmpList;
         System.out.println("--------打豆豆的前缀匹配");
-        tmpList = treeService.prefixWordTopList("打豆豆", SearchType.SEARCH_TOP, 5);
+        tmpList = treeService.prefixWordTopList("打豆豆");
         if (tmpList.size() == 0){
             System.out.println("没有可以匹配的啊啊");
         }else {
@@ -34,7 +30,7 @@ public class Main {
         }
 
         System.out.println("--------我是好处 的前缀匹配");
-        tmpList = treeService.prefixWordTopList("我是好处", SearchType.SEARCH_TOP, 5);
+        tmpList = treeService.prefixWordTopList("我是好处");
         if (tmpList.size() == 0){
             System.out.println("没有可以匹配的啊啊");
         }else {
@@ -42,7 +38,7 @@ public class Main {
         }
 
         System.out.println("--------我是好词 的前缀匹配");
-        tmpList = treeService.prefixWordTopList("我是好词", SearchType.SEARCH_TOP, 5);
+        tmpList = treeService.prefixWordTopList("我是好词");
         if (tmpList.size() == 0){
             System.out.println("没有可以匹配的啊啊");
         }else {

@@ -73,20 +73,26 @@ public class TreeInitService {
     private void buildTheTreeT(String fileName){
         TreeUsedData treeUsedData = new TreeUsedData();
         BufferedReader bufferedReader = null;
+        String content;
+
+        // 字－code   letter－code
+        int chCode = 0;
+        Map<Character, Integer> characterCodeMap = Maps.newHashMap();
+        char[] abc = "abcdefgfhijklmnopqrstuvwxyz".toCharArray();
+        for (char tmp:abc){
+            characterCodeMap.put(tmp, chCode++);
+        }
+
+
         try {
             bufferedReader = new BufferedReader(new FileReader(new File(fileName)));
-            String content;
-
-            int chCode = 0;
-            Map<Character, Integer> characterCodeMap = Maps.newHashMap();
             Node rootNode = new Node(-1, "");
             while ((content = bufferedReader.readLine()) != null){
                 // 除去不符合格式要求的数据
                 String[] line = content.split(",");
-                if (content.equals("") || line.length != 3){
+                if (content.equals("") || line.length != 4){
                     continue;
                 }
-
                 // 字－code
                 char[] charArr = line[0].toCharArray();
                 for (char ch : charArr){
@@ -96,14 +102,13 @@ public class TreeInitService {
                 }
 
                 try {
-                    double weight = Double.parseDouble(line[2]);
-                    // 插入word
-                    treeService.insertWordToTree(rootNode, line[0],line[1], weight, characterCodeMap);
+                    double weight = Double.parseDouble(line[3]);
+                    // 插入word 包括全拼 简拼
+                    treeService.insertWordToTree(rootNode, line[0],line[1],line[2], weight, characterCodeMap);
                 }catch (Exception e){
                     e.printStackTrace();
                     logger.error("类型转换或者插入树节点出错" + e.getMessage());
                     continue;
-
                 }
             }
 
@@ -111,6 +116,8 @@ public class TreeInitService {
             treeUsedData.setRootNode(rootNode);
             treeUsedData.setCharacterCodeMap(characterCodeMap);
             treeService.setDataUsed(treeUsedData);
+
+            treeService.preOrderDisplayTreeNode(treeUsedData.getRootNode());
 
         } catch (Exception e) {
             e.printStackTrace();

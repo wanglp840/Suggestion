@@ -1,35 +1,39 @@
-我们,wo men,1
-我们的,wo men de,20
-我们的吧,wo men de ba,23
-我是好人,wo shi hao ren,4
-我是坏人,wo shi huai ren,5
-我是好人吗,wo shi hao ren ma,1
+中关村,zhongguancun,zgc,1
+中国,zhongguo,zg,2
+在国外,zaiguowai,zgw,3
 
-词曲,ci qu,8
-词素,ci su,20
-词性,ci xing,33
-词序,ci xu,32
-词语,ci yu,8
-词缀,ci zhui,33
-词组,ci zu,8
+我们,women,wm,1
+我们的,womende,wmd,20
+我们的吧,womendeba,wmdb,23
+我是好人,woshihaoren,wshr,4
+我是坏人,woshihuairen,wshr,5
+我是好人吗,woshihaorenma,wshrm,1
 
-祠堂,ci tang,10
+词曲,ciqu,cq,8
+词素,cisu,cs,20
+词性,cixing,cx,33
+词序,cixu,cx,32
+词语,ciyu,cy,8
+词缀,cizhui,cz,33
+词组,cizu,cz,8
 
-瓷器,ci qi,10
+祠堂,citang,ct,10
 
-慈爱,ci ai,2
-慈悲,ci bei,3
-慈善,ci shan,4
-慈祥,ci xiang,5
+瓷器,ciqi,cq,10
 
-辞别,ci bie,44
-辞呈,ci cheng,44
-辞典,ci dian,2
-辞海,ci hai,2
-辞令,ci ling,2
-辞去,ci qu,3
-辞书,ci shu,99
-大厦,da sha,11
+慈爱,ciai,ca,2
+慈悲,cibei,cb,3
+慈善,cishan,cs,4
+慈祥,cixiang,cx,5
 
-大人,da ren,11
+辞别,cibie,cb,44
+辞呈,cicheng,cc,44
+辞典,cidian,cd,2
+辞海,cihai,ch,2
+辞令,ciling,cl,2
+辞去,ciqu,cq,3
+辞书,cishu,cs,99
+大厦,dasha,ds,11
+
+大人,daren,dr,11
 
