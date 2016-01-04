@@ -1,7 +1,10 @@
 package service;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import common.entity.Node;
+import common.entity.Rule;
 import common.other.PropertiesConstants;
 import common.other.TreeUsedData;
 import org.apache.log4j.Logger;
@@ -12,6 +15,7 @@ import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,28 +69,51 @@ public class TreeInitService {
 
         long beginTime = System.currentTimeMillis();
         logger.error("文件有变化，正在重新生成新的树");
+        // 建树
         buildTheTreeT(fileName);
+
+        System.out.println(Joiner.on("\n").join(treeService.treeUsedData.getNodeList()));
+        System.out.println("\n\n\n@@@@@@@@@@\n\n\n");
+
+        // 设置节点匹配字节点的ruleList
+        treeService.setNodeRuleList(treeService.treeUsedData.getNodeList().get(0));
+
+        System.out.println(Joiner.on("\n").join(treeService.treeUsedData.getNodeList()));
+        System.out.println(Joiner.on("\n").withKeyValueSeparator("=>").join(treeService.treeUsedData.getCharacterCodeMap()));
+
         long endTime = System.currentTimeMillis();
         logger.error("树更新完毕,耗时(毫秒)：" + (endTime - beginTime));
     }
 
+    /**
+     * 读取文件建树
+     * @param fileName
+     */
     private void buildTheTreeT(String fileName){
         TreeUsedData treeUsedData = new TreeUsedData();
-        BufferedReader bufferedReader = null;
-        String content;
+        TreeService.nodeId = 1;  //0被根节点使用
+        int ruleId = 0;
+
+
+        // 字编码 结点 rule信息
+        Map<Character, Integer> characterCodeMap = Maps.newHashMap();
+        List<Node> allNodeList = Lists.newArrayList();
+        List<Rule> allRuleList = Lists.newArrayList();
 
         // 字－code   letter－code
         int chCode = 0;
-        Map<Character, Integer> characterCodeMap = Maps.newHashMap();
         char[] abc = "abcdefgfhijklmnopqrstuvwxyz".toCharArray();
         for (char tmp:abc){
             characterCodeMap.put(tmp, chCode++);
         }
 
-
+        BufferedReader bufferedReader = null;
+        String content;
         try {
             bufferedReader = new BufferedReader(new FileReader(new File(fileName)));
-            Node rootNode = new Node(-1, "");
+            Node rootNode = new Node(0);
+            allNodeList.add(rootNode);
+
             while ((content = bufferedReader.readLine()) != null){
                 // 除去不符合格式要求的数据
                 String[] line = content.split(",");
@@ -100,11 +127,13 @@ public class TreeInitService {
                         characterCodeMap.put(ch, chCode++);
                     }
                 }
-
                 try {
                     double weight = Double.parseDouble(line[3]);
+                    Rule rule = new Rule(ruleId, line[0], weight);
+                    allRuleList.add(rule);
                     // 插入word 包括全拼 简拼
-                    treeService.insertWordToTree(rootNode, line[0],line[1],line[2], weight, characterCodeMap);
+                    treeService.insertWordToTree(allNodeList, line[0],line[1],line[2], ruleId, characterCodeMap);
+                    ruleId++;
                 }catch (Exception e){
                     e.printStackTrace();
                     logger.error("类型转换或者插入树节点出错" + e.getMessage());
@@ -113,12 +142,10 @@ public class TreeInitService {
             }
 
             //  更新树
-            treeUsedData.setRootNode(rootNode);
             treeUsedData.setCharacterCodeMap(characterCodeMap);
+            treeUsedData.setNodeList(allNodeList);
+            treeUsedData.setRuleList(allRuleList);
             treeService.setDataUsed(treeUsedData);
-
-            treeService.preOrderDisplayTreeNode(treeUsedData.getRootNode());
-
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("建树失败，" + e.getMessage());

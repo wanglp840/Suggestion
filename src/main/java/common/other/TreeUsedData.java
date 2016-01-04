@@ -1,6 +1,7 @@
 package common.other;
 
 import common.entity.Node;
+import common.entity.Rule;
 
 import java.util.List;
 import java.util.Map;
@@ -14,19 +15,24 @@ import java.util.Map;
  */
 
 public class TreeUsedData {
-    // 根节点
-    private Node rootNode;
-
     // 字－code
     private Map<Character, Integer> characterCodeMap;
 
+    // 所有结点
+    private List<Node> nodeList;
 
-    public Node getRootNode() {
-        return rootNode;
+    // ruleList
+    private List<Rule> ruleList;
+
+
+
+
+    public List<Node> getNodeList() {
+        return nodeList;
     }
 
-    public void setRootNode(Node rootNode) {
-        this.rootNode = rootNode;
+    public void setNodeList(List<Node> nodeList) {
+        this.nodeList = nodeList;
     }
 
     public Map<Character, Integer> getCharacterCodeMap() {
@@ -35,5 +41,13 @@ public class TreeUsedData {
 
     public void setCharacterCodeMap(Map<Character, Integer> characterCodeMap) {
         this.characterCodeMap = characterCodeMap;
+    }
+
+    public List<Rule> getRuleList() {
+        return ruleList;
+    }
+
+    public void setRuleList(List<Rule> ruleList) {
+        this.ruleList = ruleList;
     }
 }

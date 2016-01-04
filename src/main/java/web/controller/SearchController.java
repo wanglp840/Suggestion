@@ -2,11 +2,11 @@ package web.controller;
 
 import com.google.common.collect.Lists;
 import common.other.URLConstants;
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import service.TreeService;
 
 import java.util.List;
@@ -25,17 +25,18 @@ public class SearchController {
     @Autowired
     private TreeService treeService;
 
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    public String search(String q, Model model) {
+    @RequestMapping(value = "")
+    @ResponseBody
+    public JSONObject search(String queryWord) {
         List<String> words = Lists.newArrayList();
-
-        if (!q.equals("")) {
-            words = treeService.prefixWordTopList(q);
-
-            model.addAttribute("queryWords", words);
+        if (!queryWord.equals("")) {
+            words = treeService.prefixWordTopList(queryWord);
         }
 
-        return "index";
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", 0);
+        jsonObject.put("data", words.toArray());
+        return jsonObject;
     }
 
 

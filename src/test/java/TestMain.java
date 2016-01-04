@@ -1,3 +1,5 @@
+package java;
+
 import service.TreeService;
 
 import java.util.List;
@@ -18,7 +20,7 @@ public class TestMain {
 
 
         // 测试词语完全匹配
-        System.out.println(treeService.isWordFullMath("打豆豆"));
+//        System.out.println(treeService.isWordFullMath("打豆豆"));
 
         List<String> tmpList;
         System.out.println("--------打豆豆的前缀匹配");
