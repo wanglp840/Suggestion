@@ -42,7 +42,7 @@ public class Node {
     public String toString() {
         return "Node{" +
                 "nodeId=" + nodeId +
-                "value=" + tmpValue +
+                ",value=" + tmpValue +
                 ", pathList=" + Joiner.on(" ").join(pathList) +
                 ", ruleIdList=" + ruleIdList +
                 '}';

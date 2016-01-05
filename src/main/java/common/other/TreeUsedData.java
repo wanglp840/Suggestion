@@ -19,19 +19,18 @@ public class TreeUsedData {
     private Map<Character, Integer> characterCodeMap;
 
     // 所有结点
-    private List<Node> nodeList;
+    private List<List<Node>> nodeList;
 
     // ruleList
     private List<Rule> ruleList;
 
 
 
-
-    public List<Node> getNodeList() {
+    public List<List<Node>> getNodeList() {
         return nodeList;
     }
 
-    public void setNodeList(List<Node> nodeList) {
+    public void setNodeList(List<List<Node>> nodeList) {
         this.nodeList = nodeList;
     }
 

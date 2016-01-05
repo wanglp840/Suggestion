@@ -23,8 +23,6 @@ import java.util.logging.Logger;
 public class TreeService {
     private static Logger logger = Logger.getLogger("treeService name");
     TreeUsedData treeUsedData = new TreeUsedData();
-    // 节点nodeId控制变量
-    public static int nodeId = 1;
 
 
     /**
@@ -47,19 +45,29 @@ public class TreeService {
      * @return
      */
     public List<String> prefixWordTopList(String queryWord) {
-        // 将词语切词并转换为code码  获取结果
+        List<Integer> allMatchRuleList = Lists.newArrayList();
+
+        // 将词语切词并转换为code码
         List<Integer> queryCodeList = this.toCharacterCodeList(queryWord);
-        List<Integer> ruleIdList = Lists.newArrayList();
-        this.allPrefixWordList(queryCodeList, ruleIdList);
+
+        // 前缀匹配词
+        List<Integer> prefixRuleIdList = Lists.newArrayList();
+        Node curNode = this.treeUsedData.getNodeList().get(0).get(0);
+        this.allPrefixWordList(queryCodeList, prefixRuleIdList, curNode, 0);
+        allMatchRuleList.addAll(prefixRuleIdList);
+        // 中缀匹配词
+        List<Integer> middleRuleList = Lists.newArrayList();
+        this.allMiddleWordList(queryCodeList, middleRuleList);
+        allMatchRuleList.addAll(middleRuleList);
 
         // 查询类型为所有 或者 长度为0
-        if (ruleIdList.size() == 0) {
+        if (allMatchRuleList.size() == 0) {
             return Lists.newArrayList();
         }
 
         // 去重
         List<Integer> noPeatList = Lists.newArrayList();
-        for (Integer ruleId : ruleIdList) {
+        for (Integer ruleId : allMatchRuleList) {
             if (Collections.frequency(noPeatList, ruleId) < 1){
                 noPeatList.add(ruleId);
             }
@@ -86,11 +94,8 @@ public class TreeService {
      *
      * @return
      */
-    private void allPrefixWordList(List<Integer> queryCodeList, List<Integer> ruleIdList) {
-        Node curNode = this.treeUsedData.getNodeList().get(0);
-
+    private void allPrefixWordList(List<Integer> queryCodeList, List<Integer> ruleIdList, Node curNode, int curLevelId) {
         // 找到query的尾节点
-        int i = 0;
         for (int code : queryCodeList) {
             // 出现树中没有的字
             if (code < 0) {
@@ -101,12 +106,47 @@ public class TreeService {
             if (index < 0) {
                 return;
             } else {
-                curNode = treeUsedData.getNodeList().get(curNode.pathList.get(index).toNodeId);
+                try{
+                    curNode = treeUsedData.getNodeList().get(curLevelId + 1).get(curNode.pathList.get(index).toNodeId);
+                }catch (Exception e){
+                    System.out.println(e);
+                }
             }
+
+            curLevelId++;
         }
 
         ruleIdList.clear();
         ruleIdList.addAll(curNode.ruleIdList);
+    }
+
+
+    private void allMiddleWordList(List<Integer> queryCodeList, List<Integer> ruleList){
+        int characterCode = queryCodeList.get(0);int levelCount = this.treeUsedData.getNodeList().size();
+        List<Integer> tmpRuleList = Lists.newArrayList();
+
+        // 逐层寻找该characterCode的Node
+        for (int i = 1; i < levelCount; i++){
+            List<Node> oneLevel = this.treeUsedData.getNodeList().get(i);
+            for (int j = 0; j < oneLevel.size(); j++){
+                int index = Collections.binarySearch(oneLevel.get(j).pathList, characterCode);
+                if (index < 0){
+                    continue;
+                }else {
+                    tmpRuleList.clear();
+                    int nodeId = this.treeUsedData.getNodeList().get(i).get(j).pathList.get(index).toNodeId;
+                    Node curNode = this.treeUsedData.getNodeList().get(i+1).get(nodeId);
+
+                    if(queryCodeList.size() - 1 > 0){
+                        this.allPrefixWordList(queryCodeList.subList(1, queryCodeList.size()), tmpRuleList, curNode, i+1);
+                        ruleList.addAll(tmpRuleList);
+                    }else {
+                        ruleList.addAll(curNode.ruleIdList);
+                    }
+
+                }
+            }
+        }
     }
 
 
@@ -122,7 +162,7 @@ public class TreeService {
      * @param jianpin
      * @param characterCodeMap
      */
-    public void insertWordToTree(List<Node> allNodeList, String word, String pinyin, String jianpin, Integer ruleCode, Map<Character, Integer> characterCodeMap) {
+    public void insertWordToTree(List<List<Node>> allNodeList, String word, String pinyin, String jianpin, Integer ruleCode, Map<Character, Integer> characterCodeMap) {
         // 插入汉字
         insertContentToTree(allNodeList, word, word, ruleCode, characterCodeMap);
         // 插入拼音
@@ -132,8 +172,9 @@ public class TreeService {
 
     }
 
-    private void insertContentToTree(List<Node> allNodeList, String word, String content, Integer ruleCode, Map<Character, Integer> characterCodeMap) {
-        Node curNode = allNodeList.get(0);
+    private void insertContentToTree(List<List<Node>> allNodeList, String word, String content, Integer ruleCode, Map<Character, Integer> characterCodeMap) {
+        Node curNode = allNodeList.get(0).get(0);
+        int levelId = 1;
 
         char[] characterArr = content.toCharArray();
         for (int i = 0; i < characterArr.length; i++) {
@@ -141,41 +182,58 @@ public class TreeService {
             // 查看其是否已经存在
             int index = Collections.binarySearch(curNode.pathList, code);
             if (index < 0) { // 不存在，则插入新节点,更新当前节点指向
+                int nodeId = 0;
+                if (allNodeList.size() > levelId){
+                    nodeId = allNodeList.get(levelId).size();
+                }
+
                 Node tmpInsertNode = new Node(nodeId);
                 Path tmpPath = new Path(characterCodeMap.get(characterArr[i]), nodeId);
                 tmpInsertNode.tmpValue = characterArr[i];
-
                 nodeId++;
+
                 // 结束字
                 if (i == characterArr.length - 1) {
                     tmpInsertNode.ruleIdList.add(ruleCode);
                 }
 
-                allNodeList.add(tmpInsertNode);
+                if (allNodeList.size() < levelId + 1){
+                    List<Node> tmpList = Lists.newArrayList();
+                    tmpList.add(tmpInsertNode);
+                    allNodeList.add(levelId, tmpList);
+                }else {
+                    allNodeList.get(levelId).add(tmpInsertNode);
+                }
+
                 curNode.pathList.add(Math.abs(index + 1), tmpPath);
                 curNode = tmpInsertNode;
-            } else { // 存在 直接更新当前节点指向
-                curNode = allNodeList.get(curNode.pathList.get(index).toNodeId);
+            } else { // 存在 更新当前节点
+                // 下一节点的nodeId
+                int nextNodeId = curNode.pathList.get(index).toNodeId;
+                curNode = allNodeList.get(levelId).get(nextNodeId);
 
                 // 结束字
                 if (i == characterArr.length - 1) {
                     curNode.ruleIdList.add(ruleCode);
                 }
             }
+            levelId++;
         }
     }
 
 
-    public void setNodeRuleList(Node curNode) {
+    public void setNodeRuleList(Node curNode, int curLevelId) {
         if (curNode.pathList.size() == 0) {
             return;
         }
 
         List<Integer> ruleList = curNode.ruleIdList;
         for (Path path : curNode.pathList) {
-            Node next = treeUsedData.getNodeList().get(path.toNodeId);
-            setNodeRuleList(next);
-            ruleList.addAll(next.ruleIdList);
+            int nextNodeId = path.toNodeId;
+            Node nextNode = treeUsedData.getNodeList().get(curLevelId + 1).get(nextNodeId);
+            setNodeRuleList(nextNode, curLevelId + 1);
+
+            ruleList.addAll(nextNode.ruleIdList);
         }
         curNode.ruleIdList = ruleList;
     }
