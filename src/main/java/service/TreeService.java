@@ -5,6 +5,12 @@ import com.google.common.collect.Lists;
 import common.entity.Node;
 import common.entity.Path;
 import common.other.TreeUsedData;
+import common.utils.PatternMatchUtil;
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -12,6 +18,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Auther wanglp
@@ -38,14 +46,16 @@ public class TreeService {
 
     // －－－－－－－－－－－－－－－查询－－－－－－－－－－－－－－－－－
     /**
-     * 查询前缀匹配排序结果列表
-     *
+     * 查询匹配结果排序列表
      * @param queryWord
      * @param
      * @return
      */
     public List<String> prefixWordTopList(String queryWord) {
         List<Integer> allMatchRuleList = Lists.newArrayList();
+
+        // 处理查询词
+        queryWord = this.getTheHandledQuery(queryWord);
 
         // 将词语切词并转换为code码
         List<Integer> queryCodeList = this.toCharacterCodeList(queryWord);
@@ -55,10 +65,14 @@ public class TreeService {
         Node curNode = this.treeUsedData.getNodeList().get(0).get(0);
         this.allPrefixWordList(queryCodeList, prefixRuleIdList, curNode, 0);
         allMatchRuleList.addAll(prefixRuleIdList);
-        // 中缀匹配词
-        List<Integer> middleRuleList = Lists.newArrayList();
-        this.allMiddleWordList(queryCodeList, middleRuleList);
-        allMatchRuleList.addAll(middleRuleList);
+
+        // 查询串是中文时才进行中缀匹配词
+        char startQuery = queryWord.charAt(0);
+        if (PatternMatchUtil.isChinese(startQuery)){
+            List<Integer> middleRuleList = Lists.newArrayList();
+            this.allMiddleWordList(queryCodeList, middleRuleList);
+            allMatchRuleList.addAll(middleRuleList);
+        }
 
         // 查询类型为所有 或者 长度为0
         if (allMatchRuleList.size() == 0) {
@@ -89,9 +103,9 @@ public class TreeService {
         }).subList(0, 100000 > noPeatList.size() ? noPeatList.size() : 15);
     }
 
+
     /**
      * 查询出前缀匹配的所有词语
-     *
      * @return
      */
     private void allPrefixWordList(List<Integer> queryCodeList, List<Integer> ruleIdList, Node curNode, int curLevelId) {
@@ -121,6 +135,11 @@ public class TreeService {
     }
 
 
+    /**
+     * 中缀匹配查询
+     * @param queryCodeList
+     * @param ruleList
+     */
     private void allMiddleWordList(List<Integer> queryCodeList, List<Integer> ruleList){
         int characterCode = queryCodeList.get(0);int levelCount = this.treeUsedData.getNodeList().size();
         List<Integer> tmpRuleList = Lists.newArrayList();
@@ -136,12 +155,6 @@ public class TreeService {
                     tmpRuleList.clear();
                     int nodeId = this.treeUsedData.getNodeList().get(i).get(j).pathList.get(index).toNodeId;
                     Node curNode = this.treeUsedData.getNodeList().get(i+1).get(nodeId);
-
-                    // 非起始状态的拼音节点
-                    if (curNode.startFlag == false){
-                        continue;
-                    }
-
                     if(queryCodeList.size() - 1 > 0){
                         this.allPrefixWordList(queryCodeList.subList(1, queryCodeList.size()), tmpRuleList, curNode, i+1);
                         ruleList.addAll(tmpRuleList);
@@ -168,47 +181,26 @@ public class TreeService {
      */
     public void insertWordToTree(List<List<Node>> allNodeList, String word, String pinyin, String jianpin, Integer ruleCode, Map<Character, Integer> characterCodeMap) {
         // 插入汉字
-        insertContentToTree(allNodeList, false, word, ruleCode, characterCodeMap);
+        insertContentToTree(allNodeList, word, ruleCode, characterCodeMap);
         // 插入拼音
-        insertContentToTree(allNodeList, true, pinyin, ruleCode, characterCodeMap);
+        insertContentToTree(allNodeList, pinyin, ruleCode, characterCodeMap);
         // 插入简拼
-        insertContentToTree(allNodeList, false, jianpin, ruleCode, characterCodeMap);
+        insertContentToTree(allNodeList, jianpin, ruleCode, characterCodeMap);
 
     }
 
-    private void insertContentToTree(List<List<Node>> allNodeList, boolean isPinYin, String content, Integer ruleCode, Map<Character, Integer> characterCodeMap) {
+    private void insertContentToTree(List<List<Node>> allNodeList, String content, Integer ruleCode, Map<Character, Integer> characterCodeMap) {
         Node curNode = allNodeList.get(0).get(0);
         int levelId = 1;
 
-
-        // 拼音是否是首字母设置
-        StringBuffer strBuf = new StringBuffer();
-        if(isPinYin){
-            String[] tmpPinyArr = content.split(" ");
-            for (String str : tmpPinyArr){
-                for (int i = 0 ; i < str.length(); i++){
-                    if (i == 0){
-                        strBuf.append(str.charAt(i));
-                    }else {
-                        strBuf.append(Character.toUpperCase(str.charAt(i)));
-                    }
-                }
-            }
-            content = strBuf.toString();
-        }
-
-
+        // 去除空格
+        content = content.replace(" ","");
         // 一个一个节点插入
+
         char[] characterArr = content.toCharArray();
         for (int i = 0; i < characterArr.length; i++) {
             char curCharacter = characterArr[i];
-
-            int pathCharacterCode = -1;
-            if (isPinYin){
-                pathCharacterCode = characterCodeMap.get(Character.toLowerCase(curCharacter));
-            }else {
-                pathCharacterCode = characterCodeMap.get(curCharacter);
-            }
+            int pathCharacterCode = characterCodeMap.get(curCharacter);
 
             // 查看其是否已经存在
             int index = Collections.binarySearch(curNode.pathList, pathCharacterCode);
@@ -222,11 +214,6 @@ public class TreeService {
                 Node tmpInsertNode = new Node(nodeId);
                 Path tmpPath = new Path(pathCharacterCode, nodeId);
                 tmpInsertNode.tmpValue = Character.toLowerCase(curCharacter);
-
-                // 大写字母，标志为不可为起始搜索关键字
-                if (isPinYin && Character.isUpperCase(curCharacter)){
-                    tmpInsertNode.startFlag = false;
-                }
                 nodeId++;
 
                 // 结束字
@@ -259,6 +246,11 @@ public class TreeService {
     }
 
 
+    /**
+     * 设置所有节点的匹配串的ruleIdList
+     * @param curNode
+     * @param curLevelId
+     */
     public void setNodeRuleList(Node curNode, int curLevelId) {
         if (curNode.pathList.size() == 0) {
             return;
@@ -276,11 +268,12 @@ public class TreeService {
     }
 
 
+
+
     // －－－－－－－－－－－－－－－其他－－－－－－－－－－－－－－
 
     /**
      * 将汉字转换为code
-     *
      * @param word
      * @return
      */
@@ -296,4 +289,56 @@ public class TreeService {
         }
         return codeList;
     }
+
+    /**
+     * 处理查询字符串
+     * @param oriQuery
+     * @return
+     */
+    private String getTheHandledQuery(String oriQuery){
+        StringBuffer sb = new StringBuffer();
+
+        // 如果全是英文 全是中文，不处理
+        if(PatternMatchUtil.isAllLetters(oriQuery) || PatternMatchUtil.isAllChinese(oriQuery)){
+            return oriQuery;
+        }
+
+        char[] queryArr = oriQuery.toCharArray();
+        // 首字母是中文 截取为首的中文串  首字母是拼音,将后面的汉字转换为拼音
+        if(PatternMatchUtil.isChinese(queryArr[0])){
+            for (char tmp : queryArr){
+                if (PatternMatchUtil.isChinese(tmp)){
+                    sb.append(tmp);
+                }else {
+                    break;
+                }
+            }
+            return sb.toString();
+        }else if (PatternMatchUtil.isLetter(queryArr[0])){
+            // 转换工具
+            HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
+            format.setCaseType(HanyuPinyinCaseType.LOWERCASE);
+            format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+
+            for (char tmp : queryArr){
+                if (PatternMatchUtil.isChinese(tmp)){
+                    String pinyin[] = null;
+                    try {
+                        pinyin = PinyinHelper.toHanyuPinyinStringArray(tmp, format);
+                    } catch (BadHanyuPinyinOutputFormatCombination e) {
+                        e.printStackTrace();
+                    }
+                    sb.append(pinyin[0]);
+                }else {
+                    sb.append(tmp);
+                }
+            }
+            return sb.toString();
+        }else { // 其他如数字 暂不处理
+            return oriQuery;
+        }
+    }
+
+
+
 }

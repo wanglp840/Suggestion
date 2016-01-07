@@ -103,6 +103,13 @@
             <version>2.3.2</version>
         </dependency>
 
+        <!--将汉字转换为拼音的包-->
+        <dependency>
+            <groupId>net.sourceforge</groupId>
+            <artifactId>pinyin4j</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>

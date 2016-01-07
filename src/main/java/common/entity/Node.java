@@ -21,9 +21,6 @@ public class Node {
     // 匹配字节点的ruleId
     public List<Integer> ruleIdList = Lists.newArrayList();
 
-    // 用于处理拼音搜索时query的首字母非汉字开始拼音
-    public boolean startFlag = true;
-
     // 方便调试用
     public char tmpValue;
 
@@ -46,7 +43,6 @@ public class Node {
         return "Node{" +
                 "nodeId=" + nodeId +
                 ",value=" + tmpValue +
-                ",STAFLAG" + startFlag +
                 ", pathList=" + Joiner.on(" ").join(pathList) +
                 ", ruleIdList=" + ruleIdList +
                 '}';

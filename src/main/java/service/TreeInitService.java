@@ -104,9 +104,6 @@ public class TreeInitService {
         for (char tmp : abcStr.toCharArray()){
             characterCodeMap.put(tmp, chCode++);
         }
-        for (char tmp : abcStr.toUpperCase().toCharArray()){
-            characterCodeMap.put(tmp, chCode++);
-        }
 
         BufferedReader bufferedReader = null;
         String content;
