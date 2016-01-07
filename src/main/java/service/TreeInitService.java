@@ -98,10 +98,13 @@ public class TreeInitService {
         List<List<Node>> allLevelNodeList = Lists.newArrayList();
         List<Rule> allRuleList = Lists.newArrayList();
 
-        // 字－code   letter－code
+        // 字母－code信息存储
         int chCode = 0;
-        char[] abc = "abcdefgfhijklmnopqrstuvwxyz".toCharArray();
-        for (char tmp:abc){
+        String abcStr = "abcdefgfhijklmnopqrstuvwxyz";
+        for (char tmp : abcStr.toCharArray()){
+            characterCodeMap.put(tmp, chCode++);
+        }
+        for (char tmp : abcStr.toUpperCase().toCharArray()){
             characterCodeMap.put(tmp, chCode++);
         }
 

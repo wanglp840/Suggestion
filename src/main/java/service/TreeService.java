@@ -86,7 +86,7 @@ public class TreeService {
             public String apply(Integer input) {
                 return treeUsedData.getRuleList().get(input).getExpression();
             }
-        }).subList(0, 15 > noPeatList.size() ? noPeatList.size() : 15);
+        }).subList(0, 100000 > noPeatList.size() ? noPeatList.size() : 15);
     }
 
     /**
@@ -137,13 +137,17 @@ public class TreeService {
                     int nodeId = this.treeUsedData.getNodeList().get(i).get(j).pathList.get(index).toNodeId;
                     Node curNode = this.treeUsedData.getNodeList().get(i+1).get(nodeId);
 
+                    // 非起始状态的拼音节点
+                    if (curNode.startFlag == false){
+                        continue;
+                    }
+
                     if(queryCodeList.size() - 1 > 0){
                         this.allPrefixWordList(queryCodeList.subList(1, queryCodeList.size()), tmpRuleList, curNode, i+1);
                         ruleList.addAll(tmpRuleList);
                     }else {
                         ruleList.addAll(curNode.ruleIdList);
                     }
-
                 }
             }
         }
@@ -164,32 +168,65 @@ public class TreeService {
      */
     public void insertWordToTree(List<List<Node>> allNodeList, String word, String pinyin, String jianpin, Integer ruleCode, Map<Character, Integer> characterCodeMap) {
         // 插入汉字
-        insertContentToTree(allNodeList, word, word, ruleCode, characterCodeMap);
+        insertContentToTree(allNodeList, false, word, ruleCode, characterCodeMap);
         // 插入拼音
-        insertContentToTree(allNodeList, word, pinyin, ruleCode, characterCodeMap);
+        insertContentToTree(allNodeList, true, pinyin, ruleCode, characterCodeMap);
         // 插入简拼
-        insertContentToTree(allNodeList, word, jianpin, ruleCode, characterCodeMap);
+        insertContentToTree(allNodeList, false, jianpin, ruleCode, characterCodeMap);
 
     }
 
-    private void insertContentToTree(List<List<Node>> allNodeList, String word, String content, Integer ruleCode, Map<Character, Integer> characterCodeMap) {
+    private void insertContentToTree(List<List<Node>> allNodeList, boolean isPinYin, String content, Integer ruleCode, Map<Character, Integer> characterCodeMap) {
         Node curNode = allNodeList.get(0).get(0);
         int levelId = 1;
 
+
+        // 拼音是否是首字母设置
+        StringBuffer strBuf = new StringBuffer();
+        if(isPinYin){
+            String[] tmpPinyArr = content.split(" ");
+            for (String str : tmpPinyArr){
+                for (int i = 0 ; i < str.length(); i++){
+                    if (i == 0){
+                        strBuf.append(str.charAt(i));
+                    }else {
+                        strBuf.append(Character.toUpperCase(str.charAt(i)));
+                    }
+                }
+            }
+            content = strBuf.toString();
+        }
+
+
+        // 一个一个节点插入
         char[] characterArr = content.toCharArray();
         for (int i = 0; i < characterArr.length; i++) {
-            int code = characterCodeMap.get(characterArr[i]);
+            char curCharacter = characterArr[i];
+
+            int pathCharacterCode = -1;
+            if (isPinYin){
+                pathCharacterCode = characterCodeMap.get(Character.toLowerCase(curCharacter));
+            }else {
+                pathCharacterCode = characterCodeMap.get(curCharacter);
+            }
+
             // 查看其是否已经存在
-            int index = Collections.binarySearch(curNode.pathList, code);
+            int index = Collections.binarySearch(curNode.pathList, pathCharacterCode);
             if (index < 0) { // 不存在，则插入新节点,更新当前节点指向
+                // 节点Id获取 每个level从0开始
                 int nodeId = 0;
                 if (allNodeList.size() > levelId){
                     nodeId = allNodeList.get(levelId).size();
                 }
 
                 Node tmpInsertNode = new Node(nodeId);
-                Path tmpPath = new Path(characterCodeMap.get(characterArr[i]), nodeId);
-                tmpInsertNode.tmpValue = characterArr[i];
+                Path tmpPath = new Path(pathCharacterCode, nodeId);
+                tmpInsertNode.tmpValue = Character.toLowerCase(curCharacter);
+
+                // 大写字母，标志为不可为起始搜索关键字
+                if (isPinYin && Character.isUpperCase(curCharacter)){
+                    tmpInsertNode.startFlag = false;
+                }
                 nodeId++;
 
                 // 结束字

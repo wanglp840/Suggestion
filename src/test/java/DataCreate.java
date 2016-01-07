@@ -29,8 +29,13 @@ public class DataCreate {
                 String jianpin = "";
                 String newLine = tmp[0];
                 newLine = newLine + ",";
-                for (int i = 1; i < tmp.length; i++){
+
+                int tmpLength = tmp.length;
+                for (int i = 1; i < tmpLength; i++){
                     newLine = newLine + tmp[i];
+                    if (i != tmpLength-1){
+                        newLine = newLine + " ";
+                    }
                     jianpin = jianpin + tmp[i].charAt(0);
                 }
                 newLine = newLine + ",";
