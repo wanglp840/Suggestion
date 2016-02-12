@@ -71,10 +71,10 @@ public class TreeInitService {
         logger.error("文件有变化，正在重新生成新的树");
         // 建树
         buildTheTreeT(fileName);
-        System.out.println(Joiner.on("\n").join(treeService.treeUsedData.getNodeList()));
-        System.out.println(" \n 树的层数为：" + treeService.treeUsedData.getNodeList().size());
-
-        System.out.println("\n@@@@@@@@@@@@@@@@@@@@@@\n");
+//        System.out.println(Joiner.on("\n").join(treeService.treeUsedData.getNodeList()));
+//        System.out.println(" \n 树的层数为：" + treeService.treeUsedData.getNodeList().size());
+//
+//        System.out.println("\n@@@@@@@@@@@@@@@@@@@@@@\n");
 
         // 设置节点匹配字节点的ruleList
         treeService.setNodeRuleList(treeService.treeUsedData.getNodeList().get(0).get(0), 0);
@@ -132,7 +132,7 @@ public class TreeInitService {
                     treeService.insertWordToTree(allLevelNodeList, line[0], line[1], line[2], ruleId, characterCodeMap);
 
                     double weight = Double.parseDouble(line[3]);
-                    Rule rule = new Rule(ruleId, line[0]+ " " + line[1] + " " + line[2] + weight, weight);
+                    Rule rule = new Rule(ruleId, line[0]+ "，" + line[1] + "，" + line[2] + "，"+ weight, weight);
                     allRuleList.add(rule);
                     ruleId++;
                 }catch (Exception e){

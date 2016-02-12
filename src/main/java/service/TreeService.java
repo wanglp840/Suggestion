@@ -54,9 +54,6 @@ public class TreeService {
     public List<String> prefixWordTopList(String queryWord) {
         List<Integer> allMatchRuleList = Lists.newArrayList();
 
-        // 处理查询词
-        queryWord = this.getTheHandledQuery(queryWord);
-
         // 将词语切词并转换为code码
         List<Integer> queryCodeList = this.toCharacterCodeList(queryWord);
 
@@ -291,11 +288,11 @@ public class TreeService {
     }
 
     /**
-     * 处理查询字符串
+     * 处理查询字符串-中文开始则截取中文串搜索，字母开始搜索则将查询串中中文转换为全拼再查询
      * @param oriQuery
      * @return
      */
-    private String getTheHandledQuery(String oriQuery){
+    public String getTheHandledQuery(String oriQuery){
         StringBuffer sb = new StringBuffer();
 
         // 如果全是英文 全是中文，不处理
@@ -337,6 +334,34 @@ public class TreeService {
         }else { // 其他如数字 暂不处理
             return oriQuery;
         }
+    }
+
+    /**
+     * 对查询在串中的位置计算（适用于拼音串中没有空格的情况）
+     * @param result
+     * @param queryWord
+     * @return
+     */
+    public int[] getBoldPosition(String result, String queryWord){
+        int[] position = new int[2];
+        String[] oneLine = result.split("，");
+
+        // 中文
+        if (PatternMatchUtil.isChinese(queryWord.charAt(0))){
+            position[0] = oneLine[0].indexOf(queryWord.charAt(0));
+            position[1] = oneLine[0].indexOf(queryWord.charAt(queryWord.length()-1));
+        }else {
+            // 尝试匹配全拼
+            if(oneLine[1].indexOf(queryWord) >= 0){
+                // 中文占位+"," 因为是字母所有都是前缀匹配
+                position[0] = oneLine[0].length()+1;
+                position[1] = position[0] + queryWord.length() - 1;
+            }else { // 简拼匹配
+                position[0] = oneLine[0].length()+1 + oneLine[1].length() +1;
+                position[1] = oneLine[0].length()+1 + oneLine[1].length() +1 + queryWord.length()-1;
+            }
+        }
+        return position;
     }
 
 

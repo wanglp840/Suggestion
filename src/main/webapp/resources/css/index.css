@@ -1,54 +1,99 @@
-.content {
-	width: 900px;
-	margin: 0 auto;
-	padding-top: 200px;
+.logo{
+    display: block;
+    margin: 30px auto 0;
+    padding: 0 72.5px;
+    width: 475px
 }
-
-.content img {
-	width: 200px;
-	height: 100px;
-	margin-left:84px; 
+.search-holder{
+    width: 720px;
+    margin: 0 auto;
 }
-.content form {
-	position: relative;
-	width: 600px;
-	margin: 0 auto;
-}
-
-form input[type="text"] {
-	float: left;
-	height: 28px;
-	width: 400px;
+.search-holder input{
+    position: relative;
+    float: left;
+    width: 620px;
     line-height: 28px;
-    font-size: 13.5pt;
-    color: #444;
+    padding: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    color: rgb(68, 68, 68);
     border: 4px solid #2dacbf;
 }
-
-form input[type="submit"] {
-	float: left;
-	width: 40px;
-	height: 36px;
-	background-color: #2dacbf;
-	color: #fff;
-	border: 1px solid #bababa;
-	border-radius: 10px;
-	cursor: pointer;
-	margin-left: 10px;
-	font-size: 14px;
+.search-holder button{
+    width: 90px;
+    height: 48px;
+    cursor: pointer;
+    border: 0;
+    background: url(../img/header.png) 0 -342px no-repeat;
+    float: right;
+    text-indent: -10000px;
+}
+.search-holder button:hover{
+    background: url(../img/header.png) -90px -342px no-repeat;
+}
+/**  搜索提示框 **/
+.input-prompt-container{
+    display: block;
+    width: 618px;
+    max-height: 320px;
+    z-index: 198;
+    position: absolute;
+    background-color: #FFF;
+    border: 1px solid #76c6d1;
+    border-top: 0;
+    overflow: auto;
+}
+.input-prompt-list{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.input-prompt-list li{
+    border-bottom: 1px dashed #e4e4e4;
+    padding: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #333;
+    font-weight: bold;
+}
+.input-prompt-list li.active{
+    background-color: #75c2d4;
+    color: #FFF;
+}
+.input-prompt-list li.active b{
+    color: #FFF;
+}
+.input-prompt-list b{
+    color: #094;
+}
+.input-prompt-list span{
+    margin-left: 15px;
+    color: #989898;
+    font-weight: normal;
 }
 
-.list {
-	position: absolute;
-	top: 142px;
-	width: 100%;
-}
 
-.list li {
-	padding:3px 0; 
-	cursor: pointer;
+/** 列表页 */
+.margin-top20{
+    margin-top: 20px;
 }
-
-.list li:hover {
-	background-color: #eeeeee;
+.result-list{
+    clear: both;
+    width: 720px;
+    margin: 0 auto;
+}
+.result-list h2 a{
+    text-decoration: none;
+    color: #057BD2;
+    font-size: 14px;
+}
+.result-list li{
+    border-bottom: 1px #e4e4e4 dashed;
+    padding: 15px 0;
+    overflow: hidden;
+    zoom: 1;
+}
+.result-list p{
+    color: #666666;
+    line-height: 24px;
 }

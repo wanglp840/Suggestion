@@ -2,6 +2,7 @@ package web.controller;
 
 import com.google.common.collect.Lists;
 import common.other.URLConstants;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,16 +29,32 @@ public class SearchController {
     @RequestMapping(value = "")
     @ResponseBody
     public JSONObject search(String queryWord) {
-        List<String> words = Lists.newArrayList();
+        List<String> resultList = Lists.newArrayList();
+
+        // 处理后的查询串
+        queryWord = treeService.getTheHandledQuery(queryWord);
         if (!queryWord.equals("")) {
-            words = treeService.prefixWordTopList(queryWord);
+            resultList = treeService.prefixWordTopList(queryWord);
         }
 
+
+        // JsonArr生成
+        JSONArray jsonArray = new JSONArray();
+        for (String tmp : resultList){
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("strContent", tmp);
+            jsonObject.put("handledQuery", queryWord);
+            // 计算标红位置
+            int[] position = treeService.getBoldPosition(tmp, queryWord);
+            jsonObject.put("startPos", position[0]);
+            jsonObject.put("endPos", position[1]);
+            jsonArray.add(jsonObject);
+        }
+
+        // 返回Json
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", 0);
-        jsonObject.put("data", words.toArray());
+        jsonObject.put("data", jsonArray);
         return jsonObject;
     }
-
-
 }
