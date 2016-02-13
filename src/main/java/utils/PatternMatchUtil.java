@@ -1,4 +1,4 @@
-package common.utils;
+package utils;
 
 import java.util.regex.Pattern;
 
@@ -15,8 +15,6 @@ public class PatternMatchUtil {
 
     /**
      * 判断是否全是字母
-     * @param input
-     * @return
      */
     public static boolean isAllLetters(String input){
         return letterP.matcher(input).matches();
@@ -24,8 +22,6 @@ public class PatternMatchUtil {
 
     /**
      * 判断是否全是汉字
-     * @param input
-     * @return
      */
     public static boolean isAllChinese(String input){
         return chineseP.matcher(input).matches();
@@ -33,8 +29,6 @@ public class PatternMatchUtil {
 
     /**
      * 是否是字母
-     * @param input
-     * @return
      */
     public static boolean isLetter(char input){
         return letterP.matcher(input + "").matches();
@@ -42,8 +36,6 @@ public class PatternMatchUtil {
 
     /**
      * 是否是汉字
-     * @param input
-     * @return
      */
     public static boolean isChinese(char input){
         return chineseP.matcher(input + "").matches();

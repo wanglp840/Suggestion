@@ -1,20 +1,17 @@
-package common.other;
-
 import com.google.common.collect.Lists;
-import common.entity.Node;
+import pojo.Node;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * tree使用数据类，builder模式实现－未使用
- *
  * @Auther wanglp
- * @Time 15/12/13 上午12:11
+ * @Time 16/2/13 下午1:45
  * @Email wanglp840@nenu.edu.cn
  */
 
 public class TreeUsedDataBuilder {
+
     // 根节点
     private Node rootNode;
     // 词

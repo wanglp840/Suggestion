@@ -1,22 +1,26 @@
 package service;
 
+import cache.TreeCache;
 import com.google.common.base.Joiner;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import common.entity.Node;
-import common.entity.Rule;
-import common.other.PropertiesConstants;
-import common.other.TreeUsedData;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pojo.Node;
+import pojo.Rule;
+import utils.Constants;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Auther wanglp
@@ -25,13 +29,12 @@ import java.util.Map;
  */
 
 @Service("treeInitService")
+@Slf4j
 public class TreeInitService {
 
     @Autowired
     private TreeService treeService;
 
-    // 日志类
-    Logger logger = Logger.getLogger(TreeInitService.class.getName());
     // 文件版本号
     static long fileVersion = 0;
 
@@ -39,26 +42,38 @@ public class TreeInitService {
     // -----------------字典树的创建和更新启动
     @PostConstruct
     public void init() {
-        System.out.println("postConstruct－－－－－－－－－红红火火－－－－－－－");
+        log.info("postConstruct－－－－－－－－－红红火火－－－－－－－");
 
         // 树创建更新线程启动
         new Thread(new Runnable() {
             public void run() {
                 while (true) {
                     try {
+
                         // 文件
-                        String fileName = TreeService.class.getClassLoader().getResource(PropertiesConstants.dataSourceFileName).getFile();
+                        URL url = TreeService.class.getClassLoader().getResource(Constants.dataSourceFileName);
+                        if (url == null){
+                            log.error("读取文件失败");
+                            break;
+                        }
+
+                        String fileName = url.getFile();
+                        if (StringUtils.isEmpty(fileName)){
+                            continue;
+                        }
+
                         long tmpVersion = new File(fileName).lastModified();
                         if (tmpVersion != fileVersion) {
                             // 生成树 更新版本号
                             buildTheTree(fileName);
                             fileVersion = tmpVersion;
                         }
-                        System.out.println("睡眠中");
+
+                        log.info("睡眠中");
                         Thread.sleep(10000);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        logger.error(e.getMessage());
+                        log.error(e.getMessage());
                     }
                 }
             }
@@ -66,31 +81,30 @@ public class TreeInitService {
     }
 
     private void buildTheTree(String fileName){
+        Stopwatch stopwatch = Stopwatch.createStarted();
 
-        long beginTime = System.currentTimeMillis();
-        logger.error("文件有变化，正在重新生成新的树");
         // 建树
-        buildTheTreeT(fileName);
-//        System.out.println(Joiner.on("\n").join(treeService.treeUsedData.getNodeList()));
-//        System.out.println(" \n 树的层数为：" + treeService.treeUsedData.getNodeList().size());
-//
-//        System.out.println("\n@@@@@@@@@@@@@@@@@@@@@@\n");
+        log.info("文件有变化，正在重新生成新的树");
+        build(fileName);
+
+        log.info(Joiner.on("\n").join(treeService.treeCache.getNodeList()));
+        log.info(" \n 树的层数为：" + treeService.treeCache.getNodeList().size());
+        log.info("\n@@@@@@@@@@@@@@@@@@@@@@\n");
 
         // 设置节点匹配字节点的ruleList
-        treeService.setNodeRuleList(treeService.treeUsedData.getNodeList().get(0).get(0), 0);
-//        System.out.println(Joiner.on("\n").join(treeService.treeUsedData.getNodeList()));
-//        System.out.println(Joiner.on("\n").withKeyValueSeparator("=>").join(treeService.treeUsedData.getCharacterCodeMap()));
+        treeService.setNodeRuleList(treeService.treeCache.getNodeList().get(0).get(0), 0);
 
-        long endTime = System.currentTimeMillis();
-        logger.error("树更新完毕,耗时(毫秒)：" + (endTime - beginTime));
+        log.info(Joiner.on("\n").join(treeService.treeCache.getNodeList()));
+        log.info(Joiner.on("\n").withKeyValueSeparator("=>").join(treeService.treeCache.getCharacterCodeMap()));
+
+        log.error("树更新完毕,耗时(毫秒)：" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     /**
      * 读取文件建树
-     * @param fileName
      */
-    private void buildTheTreeT(String fileName){
-        TreeUsedData treeUsedData = new TreeUsedData();
+    private void build(String fileName){
+        TreeCache treeCache = new TreeCache();
 
         // 字编码 结点 rule信息
         int ruleId = 0;
@@ -137,19 +151,18 @@ public class TreeInitService {
                     ruleId++;
                 }catch (Exception e){
                     e.printStackTrace();
-                    logger.error("类型转换或者插入树节点出错" + e.getMessage());
-                    continue;
+                    log.error("类型转换或者插入树节点出错" + e.getMessage());
                 }
             }
 
             //  更新树
-            treeUsedData.setCharacterCodeMap(characterCodeMap);
-            treeUsedData.setNodeList(allLevelNodeList);
-            treeUsedData.setRuleList(allRuleList);
-            treeService.setDataUsed(treeUsedData);
+            treeCache.setCharacterCodeMap(characterCodeMap);
+            treeCache.setNodeList(allLevelNodeList);
+            treeCache.setRuleList(allRuleList);
+            treeService.setDataUsed(treeCache);
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("建树失败，" + e.getMessage());
+            log.error("建树失败，" + e.getMessage());
         } finally {
             try {
                 if (bufferedReader != null){
@@ -157,7 +170,7 @@ public class TreeInitService {
                 }
             }catch (Exception e){
                 e.printStackTrace();
-                logger.error(e.getMessage());
+                log.error(e.getMessage());
             }
         }
     }

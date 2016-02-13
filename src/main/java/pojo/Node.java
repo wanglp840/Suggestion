@@ -1,7 +1,9 @@
-package common.entity;
+package pojo;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -13,6 +15,8 @@ import java.util.List;
  * @Email wanglp840@nenu.edu.cn
  */
 
+@Getter
+@Setter
 public class Node {
 
     public int nodeId;
@@ -28,15 +32,6 @@ public class Node {
         this.nodeId = nodeId;
     }
 
-
-
-    public int getNodeId() {
-        return nodeId;
-    }
-
-    public void setNodeId(int nodeId) {
-        this.nodeId = nodeId;
-    }
 
     @Override
     public String toString() {

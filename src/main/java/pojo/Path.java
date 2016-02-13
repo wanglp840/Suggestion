@@ -1,6 +1,8 @@
-package common.entity;
+package pojo;
 
 import com.google.common.primitives.Ints;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @Auther wanglp
@@ -8,6 +10,8 @@ import com.google.common.primitives.Ints;
  * @Email wanglp840@nenu.edu.cn
  */
 
+@Getter
+@Setter
 public class Path implements Comparable<Integer>{
 
     // 转换条件－字code

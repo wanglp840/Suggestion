@@ -1,4 +1,4 @@
-package common.utils;
+package utils;
 
 import org.apache.log4j.Logger;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -80,9 +80,6 @@ public class PropertiesLoader {
 
     // 为空 返回空值 后改为返回“”
     public Object getProperty(String key){
-        return this.getProperty(key, (Object) null);
+        return this.getProperty(key, null);
     }
-
-
-
 }

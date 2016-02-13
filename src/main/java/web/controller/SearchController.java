@@ -1,14 +1,14 @@
 package web.controller;
 
 import com.google.common.collect.Lists;
-import common.other.URLConstants;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import service.TreeService;
+import utils.Constants;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
 
 
 @Controller
-@RequestMapping(value = URLConstants.INDEX_SEARCH)
+@RequestMapping(value = Constants.INDEX_SEARCH)
 public class SearchController {
 
     @Autowired

@@ -1,25 +1,23 @@
 package service;
 
+import cache.TreeCache;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import common.entity.Node;
-import common.entity.Path;
-import common.other.TreeUsedData;
-import common.utils.PatternMatchUtil;
+import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 import org.springframework.stereotype.Service;
+import pojo.Node;
+import pojo.Path;
+import utils.PatternMatchUtil;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @Auther wanglp
@@ -28,28 +26,19 @@ import java.util.regex.Pattern;
  */
 
 @Service("treeService")
+@Slf4j
 public class TreeService {
-    private static Logger logger = Logger.getLogger("treeService name");
-    TreeUsedData treeUsedData = new TreeUsedData();
 
-
-    /**
-     * 设置搜索树数据
-     *
-     * @param treeUsedData
-     */
-    public void setDataUsed(TreeUsedData treeUsedData) {
-        this.treeUsedData = treeUsedData;
+    //设置搜索树数据
+    TreeCache treeCache = new TreeCache();
+    public void setDataUsed(TreeCache treeCache) {
+        this.treeCache = treeCache;
     }
-
 
 
     // －－－－－－－－－－－－－－－查询－－－－－－－－－－－－－－－－－
     /**
      * 查询匹配结果排序列表
-     * @param queryWord
-     * @param
-     * @return
      */
     public List<String> prefixWordTopList(String queryWord) {
         List<Integer> allMatchRuleList = Lists.newArrayList();
@@ -59,7 +48,7 @@ public class TreeService {
 
         // 前缀匹配词
         List<Integer> prefixRuleIdList = Lists.newArrayList();
-        Node curNode = this.treeUsedData.getNodeList().get(0).get(0);
+        Node curNode = this.treeCache.getNodeList().get(0).get(0);
         this.allPrefixWordList(queryCodeList, prefixRuleIdList, curNode, 0);
         allMatchRuleList.addAll(prefixRuleIdList);
 
@@ -87,7 +76,7 @@ public class TreeService {
         // 排序
         Collections.sort(noPeatList, new Comparator<Integer>() {
             public int compare(Integer o1, Integer o2) {
-                return Double.compare(treeUsedData.getRuleList().get(o2).getWeight(), treeUsedData.getRuleList().get(o1).getWeight());
+                return Double.compare(treeCache.getRuleList().get(o2).getWeight(), treeCache.getRuleList().get(o1).getWeight());
             }
         });
 
@@ -95,7 +84,7 @@ public class TreeService {
         // 转换排序结果返回
         return Lists.transform(noPeatList, new Function<Integer, String>() {
             public String apply(Integer input) {
-                return treeUsedData.getRuleList().get(input).getExpression();
+                return treeCache.getRuleList().get(input).getExpression();
             }
         }).subList(0, 100000 > noPeatList.size() ? noPeatList.size() : 15);
     }
@@ -103,7 +92,6 @@ public class TreeService {
 
     /**
      * 查询出前缀匹配的所有词语
-     * @return
      */
     private void allPrefixWordList(List<Integer> queryCodeList, List<Integer> ruleIdList, Node curNode, int curLevelId) {
         // 找到query的尾节点
@@ -118,9 +106,9 @@ public class TreeService {
                 return;
             } else {
                 try{
-                    curNode = treeUsedData.getNodeList().get(curLevelId + 1).get(curNode.pathList.get(index).toNodeId);
+                    curNode = treeCache.getNodeList().get(curLevelId + 1).get(curNode.pathList.get(index).toNodeId);
                 }catch (Exception e){
-                    System.out.println(e);
+                    log.error("treeCache.getNodeList出现异常", e);
                 }
             }
 
@@ -134,56 +122,47 @@ public class TreeService {
 
     /**
      * 中缀匹配查询
-     * @param queryCodeList
-     * @param ruleList
      */
     private void allMiddleWordList(List<Integer> queryCodeList, List<Integer> ruleList){
-        int characterCode = queryCodeList.get(0);int levelCount = this.treeUsedData.getNodeList().size();
+        int characterCode = queryCodeList.get(0);int levelCount = this.treeCache.getNodeList().size();
         List<Integer> tmpRuleList = Lists.newArrayList();
 
         // 逐层寻找该characterCode的Node
         for (int i = 1; i < levelCount; i++){
-            List<Node> oneLevel = this.treeUsedData.getNodeList().get(i);
+            List<Node> oneLevel = this.treeCache.getNodeList().get(i);
             for (int j = 0; j < oneLevel.size(); j++){
                 int index = Collections.binarySearch(oneLevel.get(j).pathList, characterCode);
                 if (index < 0){
                     continue;
+                }
+
+                tmpRuleList.clear();
+                int nodeId = this.treeCache.getNodeList().get(i).get(j).pathList.get(index).toNodeId;
+                Node curNode = this.treeCache.getNodeList().get(i+1).get(nodeId);
+                if(queryCodeList.size() - 1 > 0){
+                    this.allPrefixWordList(queryCodeList.subList(1, queryCodeList.size()), tmpRuleList, curNode, i+1);
+                    ruleList.addAll(tmpRuleList);
                 }else {
-                    tmpRuleList.clear();
-                    int nodeId = this.treeUsedData.getNodeList().get(i).get(j).pathList.get(index).toNodeId;
-                    Node curNode = this.treeUsedData.getNodeList().get(i+1).get(nodeId);
-                    if(queryCodeList.size() - 1 > 0){
-                        this.allPrefixWordList(queryCodeList.subList(1, queryCodeList.size()), tmpRuleList, curNode, i+1);
-                        ruleList.addAll(tmpRuleList);
-                    }else {
-                        ruleList.addAll(curNode.ruleIdList);
-                    }
+                    ruleList.addAll(curNode.ruleIdList);
                 }
             }
         }
     }
 
 
-    // －－－－－－－－－－－－－－－建树－－－－－－－－－－－－－－－－－
 
+    // －－－－－－－－－－－－－－－建树－－－－－－－－－－－－－－－－－
 
     /**
      * 插入词语
-     *
-     * @param allNodeList
-     * @param word
-     * @param pinyin
-     * @param jianpin
-     * @param characterCodeMap
      */
-    public void insertWordToTree(List<List<Node>> allNodeList, String word, String pinyin, String jianpin, Integer ruleCode, Map<Character, Integer> characterCodeMap) {
+    public void insertWordToTree(List<List<Node>> allNodeList, String word, String pinyin, String simplePinYin, Integer ruleCode, Map<Character, Integer> characterCodeMap) {
         // 插入汉字
         insertContentToTree(allNodeList, word, ruleCode, characterCodeMap);
         // 插入拼音
         insertContentToTree(allNodeList, pinyin, ruleCode, characterCodeMap);
         // 插入简拼
-        insertContentToTree(allNodeList, jianpin, ruleCode, characterCodeMap);
-
+        insertContentToTree(allNodeList, simplePinYin, ruleCode, characterCodeMap);
     }
 
     private void insertContentToTree(List<List<Node>> allNodeList, String content, Integer ruleCode, Map<Character, Integer> characterCodeMap) {
@@ -245,8 +224,6 @@ public class TreeService {
 
     /**
      * 设置所有节点的匹配串的ruleIdList
-     * @param curNode
-     * @param curLevelId
      */
     public void setNodeRuleList(Node curNode, int curLevelId) {
         if (curNode.pathList.size() == 0) {
@@ -256,7 +233,7 @@ public class TreeService {
         List<Integer> ruleList = curNode.ruleIdList;
         for (Path path : curNode.pathList) {
             int nextNodeId = path.toNodeId;
-            Node nextNode = treeUsedData.getNodeList().get(curLevelId + 1).get(nextNodeId);
+            Node nextNode = treeCache.getNodeList().get(curLevelId + 1).get(nextNodeId);
             setNodeRuleList(nextNode, curLevelId + 1);
 
             ruleList.addAll(nextNode.ruleIdList);
@@ -271,8 +248,6 @@ public class TreeService {
 
     /**
      * 将汉字转换为code
-     * @param word
-     * @return
      */
     private List<Integer> toCharacterCodeList(String word) {
         List<Integer> codeList = Lists.newArrayList();
@@ -280,7 +255,7 @@ public class TreeService {
             char[] arr = word.toCharArray();
             // 不存在的转换为－3
             for (char c : arr) {
-                Integer value = treeUsedData.getCharacterCodeMap().get(c);
+                Integer value = treeCache.getCharacterCodeMap().get(c);
                 codeList.add(value == null ? -3 : value);
             }
         }
@@ -289,11 +264,9 @@ public class TreeService {
 
     /**
      * 处理查询字符串-中文开始则截取中文串搜索，字母开始搜索则将查询串中中文转换为全拼再查询
-     * @param oriQuery
-     * @return
      */
     public String getTheHandledQuery(String oriQuery){
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         // 如果全是英文 全是中文，不处理
         if(PatternMatchUtil.isAllLetters(oriQuery) || PatternMatchUtil.isAllChinese(oriQuery)){
@@ -325,7 +298,10 @@ public class TreeService {
                     } catch (BadHanyuPinyinOutputFormatCombination e) {
                         e.printStackTrace();
                     }
-                    sb.append(pinyin[0]);
+
+                    if (pinyin != null) {
+                        sb.append(pinyin[0]);
+                    }
                 }else {
                     sb.append(tmp);
                 }
@@ -338,9 +314,6 @@ public class TreeService {
 
     /**
      * 对查询在串中的位置计算（适用于拼音串中没有空格的情况）
-     * @param result
-     * @param queryWord
-     * @return
      */
     public int[] getBoldPosition(String result, String queryWord){
         int[] position = new int[2];
@@ -352,7 +325,7 @@ public class TreeService {
             position[1] = oneLine[0].indexOf(queryWord.charAt(queryWord.length()-1));
         }else {
             // 尝试匹配全拼
-            if(oneLine[1].indexOf(queryWord) >= 0){
+            if(oneLine[1].contains(queryWord)){
                 // 中文占位+"," 因为是字母所有都是前缀匹配
                 position[0] = oneLine[0].length()+1;
                 position[1] = position[0] + queryWord.length() - 1;
