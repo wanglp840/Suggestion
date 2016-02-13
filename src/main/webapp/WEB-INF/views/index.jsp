@@ -7,7 +7,7 @@
 		<link rel="stylesheet" href="/resources/css/base.css" />
 		<link rel="stylesheet" href="/resources/css/index.css" />
 		<script src="/resources/js/jquery.js"></script>
-		<script src="/resources/js/index_bak.js" charset="UTF-8"></script>
+		<script src="/resources/js/index.js" charset="UTF-8"></script>
 	</head>
 	<body>
 		<script type="text/javascript">

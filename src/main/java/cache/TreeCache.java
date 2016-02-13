@@ -1,5 +1,6 @@
 package cache;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import pojo.Node;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 @Getter
 @Setter
+@Builder
 public class TreeCache {
     // 字－code
     private Map<Character, Integer> characterCodeMap;

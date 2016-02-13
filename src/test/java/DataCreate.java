@@ -1,3 +1,4 @@
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import java.io.*;
@@ -8,7 +9,7 @@ import java.util.Random;
  * @Time 16/1/2 下午4:47
  * @Email wanglp840@nenu.edu.cn
  */
-
+@Slf4j
 public class DataCreate {
 
     @Test
@@ -53,13 +54,13 @@ public class DataCreate {
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }finally {
             if (bufferedReader != null){
                 try {
                     bufferedReader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                 }
             }
 
@@ -67,7 +68,7 @@ public class DataCreate {
                 try {
                     fileWriter.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                 }
             }
         }

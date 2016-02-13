@@ -30,7 +30,7 @@ import java.util.Map;
 public class TreeService {
 
     //设置搜索树数据
-    TreeCache treeCache = new TreeCache();
+    TreeCache treeCache = TreeCache.builder().build();
     public void setDataUsed(TreeCache treeCache) {
         this.treeCache = treeCache;
     }
@@ -296,7 +296,7 @@ public class TreeService {
                     try {
                         pinyin = PinyinHelper.toHanyuPinyinStringArray(tmp, format);
                     } catch (BadHanyuPinyinOutputFormatCombination e) {
-                        e.printStackTrace();
+                        log.error("转换搜索关键字为拼音失败", e.getMessage());
                     }
 
                     if (pinyin != null) {

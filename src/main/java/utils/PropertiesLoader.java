@@ -1,5 +1,6 @@
 package utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.log4j.Logger;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -14,10 +15,8 @@ import java.util.Properties;
  * @Time 15/12/9 上午11:15
  * @Email wanglp840@nenu.edu.cn
  */
-
+@Slf4j
 public class PropertiesLoader {
-
-    private static final Logger logger = Logger.getLogger(PropertiesLoader.class);
 
     // 存储properties文件中的键值对 内部hashTable实现
     private Properties properties;
@@ -39,14 +38,14 @@ public class PropertiesLoader {
                 in = resource.getInputStream();
                 pro.load(in);
             }catch (IOException e){
-                logger.error("Could not load properties from path:" + path + "," + e.getMessage());
+                log.error("Could not load properties from path:" + path + "," + e.getMessage());
             }
             finally {
                 if (in != null){
                     try {
                         in.close();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        log.error("加载配置文件：关闭流文件失败", e);
                     }
                 }
             }

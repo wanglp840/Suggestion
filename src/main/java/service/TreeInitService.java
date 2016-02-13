@@ -52,13 +52,13 @@ public class TreeInitService {
 
                         // 文件
                         URL url = TreeService.class.getClassLoader().getResource(Constants.dataSourceFileName);
-                        if (url == null){
+                        if (url == null) {
                             log.error("读取文件失败");
                             break;
                         }
 
                         String fileName = url.getFile();
-                        if (StringUtils.isEmpty(fileName)){
+                        if (StringUtils.isEmpty(fileName)) {
                             continue;
                         }
 
@@ -72,7 +72,6 @@ public class TreeInitService {
                         log.info("睡眠中");
                         Thread.sleep(10000);
                     } catch (Exception e) {
-                        e.printStackTrace();
                         log.error(e.getMessage());
                     }
                 }
@@ -80,7 +79,7 @@ public class TreeInitService {
         }).start();
     }
 
-    private void buildTheTree(String fileName){
+    private void buildTheTree(String fileName) {
         Stopwatch stopwatch = Stopwatch.createStarted();
 
         // 建树
@@ -103,21 +102,16 @@ public class TreeInitService {
     /**
      * 读取文件建树
      */
-    private void build(String fileName){
-        TreeCache treeCache = new TreeCache();
+    private void build(String fileName) {
 
         // 字编码 结点 rule信息
         int ruleId = 0;
-        Map<Character, Integer> characterCodeMap = Maps.newHashMap();
         List<List<Node>> allLevelNodeList = Lists.newArrayList();
         List<Rule> allRuleList = Lists.newArrayList();
+        Map<Character, Integer> characterCodeMap = Maps.newHashMap();
 
-        // 字母－code信息存储
-        int chCode = 0;
-        String abcStr = "abcdefgfhijklmnopqrstuvwxyz";
-        for (char tmp : abcStr.toCharArray()){
-            characterCodeMap.put(tmp, chCode++);
-        }
+        // 26字母的code存储
+        int chCode = setTheLetterCode(characterCodeMap);
 
         BufferedReader bufferedReader = null;
         String content;
@@ -128,16 +122,16 @@ public class TreeInitService {
             allLevelNodeList.add(rootList);
 
             bufferedReader = new BufferedReader(new FileReader(new File(fileName)));
-            while ((content = bufferedReader.readLine()) != null){
+            while ((content = bufferedReader.readLine()) != null) {
                 // 除去不符合格式要求的数据
                 String[] line = content.split(",");
-                if (content.equals("") || line.length != 4){
+                if (content.equals("") || line.length != 4) {
                     continue;
                 }
                 // 字－code
                 char[] charArr = line[0].toCharArray();
-                for (char ch : charArr){
-                    if(characterCodeMap.get(ch) == null){
+                for (char ch : charArr) {
+                    if (characterCodeMap.get(ch) == null) {
                         characterCodeMap.put(ch, chCode++);
                     }
                 }
@@ -146,32 +140,50 @@ public class TreeInitService {
                     treeService.insertWordToTree(allLevelNodeList, line[0], line[1], line[2], ruleId, characterCodeMap);
 
                     double weight = Double.parseDouble(line[3]);
-                    Rule rule = new Rule(ruleId, line[0]+ "，" + line[1] + "，" + line[2] + "，"+ weight, weight);
+                    Rule rule = new Rule(ruleId, line[0] + "，" + line[1] + "，" + line[2] + "，" + weight, weight);
                     allRuleList.add(rule);
                     ruleId++;
-                }catch (Exception e){
-                    e.printStackTrace();
+                } catch (Exception e) {
                     log.error("类型转换或者插入树节点出错" + e.getMessage());
                 }
             }
 
-            //  更新树
-            treeCache.setCharacterCodeMap(characterCodeMap);
-            treeCache.setNodeList(allLevelNodeList);
-            treeCache.setRuleList(allRuleList);
-            treeService.setDataUsed(treeCache);
+            // 搜索树缓存设置
+            setTreeCache(characterCodeMap, allLevelNodeList, allRuleList);
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("建树失败，" + e.getMessage());
         } finally {
             try {
-                if (bufferedReader != null){
+                if (bufferedReader != null) {
                     bufferedReader.close();
                 }
-            }catch (Exception e){
-                e.printStackTrace();
+            } catch (Exception e) {
                 log.error(e.getMessage());
             }
         }
+    }
+
+    /**
+     * 26字母的code存储
+     */
+    private int setTheLetterCode(Map<Character, Integer> characterCodeMap) {
+        // 字母－code信息存储
+        int chCode = 0;
+        String abcStr = "abcdefgfhijklmnopqrstuvwxyz";
+        for (char tmp : abcStr.toCharArray()) {
+            characterCodeMap.put(tmp, chCode++);
+        }
+        return chCode;
+    }
+
+    private void setTreeCache(Map<Character, Integer> characterCodeMap, List<List<Node>> allLevelNodeList, List<Rule> allRuleList) {
+        TreeCache.TreeCacheBuilder treeCacheBuilder = TreeCache.builder();
+
+        treeCacheBuilder.
+                characterCodeMap(characterCodeMap).
+                nodeList(allLevelNodeList).
+                ruleList(allRuleList);
+
+        treeService.setDataUsed(treeCacheBuilder.build());
     }
 }
