@@ -1,6 +1,4 @@
-package java;
-
-import service.TreeService;
+import com.suggestion.service.IndexService;
 
 import java.util.List;
 
@@ -14,39 +12,38 @@ import java.util.List;
 public class TestMain {
 
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
 
-        TreeService treeService = new TreeService();
+        IndexService indexService = new IndexService();
 
 
         // 测试词语完全匹配
-//        System.out.println(treeService.isWordFullMath("打豆豆"));
+//        System.out.println(indexService.isWordFullMath("打豆豆"));
 
         List<String> tmpList;
         System.out.println("--------打豆豆的前缀匹配");
-        tmpList = treeService.prefixWordTopList("打豆豆");
-        if (tmpList.size() == 0){
+        tmpList = indexService.search("打豆豆");
+        if (tmpList.size() == 0) {
             System.out.println("没有可以匹配的啊啊");
-        }else {
+        } else {
             System.out.println(tmpList);
         }
 
         System.out.println("--------我是好处 的前缀匹配");
-        tmpList = treeService.prefixWordTopList("我是好处");
-        if (tmpList.size() == 0){
+        tmpList = indexService.search("我是好处");
+        if (tmpList.size() == 0) {
             System.out.println("没有可以匹配的啊啊");
-        }else {
+        } else {
             System.out.println(tmpList);
         }
 
         System.out.println("--------我是好词 的前缀匹配");
-        tmpList = treeService.prefixWordTopList("我是好词");
-        if (tmpList.size() == 0){
+        tmpList = indexService.search("我是好词");
+        if (tmpList.size() == 0) {
             System.out.println("没有可以匹配的啊啊");
-        }else {
+        } else {
             System.out.println(tmpList);
         }
-
 
 
         // 前序输出树结构
@@ -88,8 +85,6 @@ public class TestMain {
         for (String s : topList){
             System.out.println(s + " " + DataConstants.weightMap.get(s));
         }*/
-
-
 
 
     }

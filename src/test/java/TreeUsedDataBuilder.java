@@ -1,5 +1,5 @@
 import com.google.common.collect.Lists;
-import pojo.Node;
+import com.suggestion.pojo.Node;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +22,23 @@ public class TreeUsedDataBuilder {
     private Map<Character, Integer> characterCodeMap;
 
 
+    private TreeUsedDataBuilder(Builder builder) {
+        rootNode = builder.rootNode;
+        allWordList = builder.allWordList;
+        wordWeightMap = builder.wordWeightMap;
+        characterCodeMap = builder.characterCodeMap;
+    }
+
+    public static Builder create() {
+        return new Builder();
+    }
+
+    public static void main(String[] args) {
+        TreeUsedDataBuilder treeUsedDataBuilder = TreeUsedDataBuilder.create().
+                setAllWordList(Lists.newArrayList(" ")).
+                setCharacterCodeMap(null).
+                builder();
+    }
 
     public static class Builder{
         private Node rootNode;
@@ -52,25 +69,5 @@ public class TreeUsedDataBuilder {
         public TreeUsedDataBuilder builder(){
             return new TreeUsedDataBuilder(this);
         }
-    }
-
-
-    public static Builder create(){
-        return new Builder();
-    }
-
-    private TreeUsedDataBuilder(Builder builder){
-        rootNode = builder.rootNode;
-        allWordList = builder.allWordList;
-        wordWeightMap = builder.wordWeightMap;
-        characterCodeMap = builder.characterCodeMap;
-    }
-
-
-    public static void main(String[] args) {
-        TreeUsedDataBuilder treeUsedDataBuilder = TreeUsedDataBuilder.create().
-                setAllWordList(Lists.newArrayList(" ")).
-                setCharacterCodeMap(null).
-                builder();
     }
 }

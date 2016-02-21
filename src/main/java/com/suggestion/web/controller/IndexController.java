@@ -1,9 +1,9 @@
-package web.controller;
+package com.suggestion.web.controller;
 
+import com.suggestion.utils.Constants;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import utils.Constants;
 
 /**
  * @Auther wanglp

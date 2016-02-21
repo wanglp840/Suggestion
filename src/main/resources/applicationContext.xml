@@ -1,33 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
        default-autowire="byName" default-lazy-init="false">
 
-    <!-- 加载基础配置文件 -->
-    <context:property-placeholder location="classpath*:wlp_suggestion.properties" />
-
-
     <!-- 注解类使用   bean包的自动扫描 -->
     <context:annotation-config/>
+    <context:component-scan base-package="com.suggestion.*"/>
 
-    <context:component-scan base-package="service"/>
-    <context:component-scan base-package="web"/>
+    <mvc:annotation-driven/>
 
+    <bean id="handlerAdapter"
+          class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/>
 
-    <mvc:annotation-driven />
-
-    <bean id="handlerAdapter" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter" />
-
-    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" id = "viewResolver">
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" id="viewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/WEB-INF/views/"/>
         <property name="suffix" value=".jsp"/>
         <property name="order" value="1"></property>
     </bean>
 
-    <mvc:resources mapping="/resources/**" location="/resources/" />
+    <bean id="dataSourceFileName" class=" java.lang.String">
+        <constructor-arg value="dict.txt"/>
+    </bean>
+
+    <mvc:resources mapping="/resources/**" location="/resources/"/>
 </beans>

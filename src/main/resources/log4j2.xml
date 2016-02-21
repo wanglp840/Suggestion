@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+
+    <properties>
+        <property name="LOG_HOME">/tmp/suggestion</property>
+        <property name="FILE_NAME">std.log</property>
+    </properties>
+
+    <Appenders>
+        <RollingRandomAccessFile name="console"
+                                 fileName="${LOG_HOME}/console.log"
+                                 filePattern="${LOG_HOME}/console-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout
+                    pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="1000 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile>
+
+
+        <RollingRandomAccessFile name="stdinfo"
+                                 fileName="${LOG_HOME}/stdinfo.log"
+                                 filePattern="${LOG_HOME}/stdinfo-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout
+                    pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="1000 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.suggestion" level="info">
+            <AppenderRef ref="stdinfo"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="console"/>
+        </Root>
+    </Loggers>
+</Configuration>

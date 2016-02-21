@@ -1,14 +1,14 @@
-package web.controller;
+package com.suggestion.web.controller;
 
 import com.google.common.collect.Lists;
+import com.suggestion.service.IndexService;
+import com.suggestion.utils.Constants;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import service.TreeService;
-import utils.Constants;
 
 import java.util.List;
 
@@ -24,17 +24,18 @@ import java.util.List;
 public class SearchController {
 
     @Autowired
-    private TreeService treeService;
+    private IndexService indexService;
 
     @RequestMapping(value = "")
     @ResponseBody
     public JSONObject search(String queryWord) {
         List<String> resultList = Lists.newArrayList();
 
+
         // 处理后的查询串
-        queryWord = treeService.getTheHandledQuery(queryWord);
+        queryWord = indexService.getTheHandledQuery(queryWord);
         if (!queryWord.equals("")) {
-            resultList = treeService.prefixWordTopList(queryWord);
+            resultList = indexService.search(queryWord);
         }
 
 
@@ -45,9 +46,9 @@ public class SearchController {
             jsonObject.put("strContent", tmp);
             jsonObject.put("handledQuery", queryWord);
             // 计算标红位置
-            int[] position = treeService.getBoldPosition(tmp, queryWord);
+            /*int[] position = indexService.getBoldPosition(tmp, queryWord);
             jsonObject.put("startPos", position[0]);
-            jsonObject.put("endPos", position[1]);
+            jsonObject.put("endPos", position[1]);*/
             jsonArray.add(jsonObject);
         }
 

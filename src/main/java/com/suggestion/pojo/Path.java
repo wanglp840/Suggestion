@@ -1,4 +1,4 @@
-package pojo;
+package com.suggestion.pojo;
 
 import com.google.common.primitives.Ints;
 import lombok.Getter;
@@ -14,11 +14,10 @@ import lombok.Setter;
 @Setter
 public class Path implements Comparable<Integer>{
 
-    // 转换条件－字code
+    // 转换条件(字code)
     public int characterCode;
-    // 转换到节点
+    // 转换到节点Id
     public int toNodeId;
-
 
 
 

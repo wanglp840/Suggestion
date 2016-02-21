@@ -1,4 +1,4 @@
-package pojo;
+package com.suggestion.pojo;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -23,7 +23,7 @@ public class Node {
     // 转换条件
     public List<Path> pathList = Lists.newArrayList();
     // 匹配字节点的ruleId
-    public List<Integer> ruleIdList = Lists.newArrayList();
+    public List<Integer> matchRuleIdList = Lists.newArrayList();
 
     // 方便调试用
     public char tmpValue;
@@ -39,7 +39,7 @@ public class Node {
                 "nodeId=" + nodeId +
                 ",value=" + tmpValue +
                 ", pathList=" + Joiner.on(" ").join(pathList) +
-                ", ruleIdList=" + ruleIdList +
+                ", matchRuleIdList=" + matchRuleIdList +
                 '}';
     }
 }
