@@ -45,10 +45,6 @@ public class SearchController {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("strContent", tmp);
             jsonObject.put("handledQuery", queryWord);
-            // 计算标红位置
-            /*int[] position = indexService.getBoldPosition(tmp, queryWord);
-            jsonObject.put("startPos", position[0]);
-            jsonObject.put("endPos", position[1]);*/
             jsonArray.add(jsonObject);
         }
 

@@ -222,31 +222,4 @@ public class IndexService {
             return oriQuery;
         }
     }
-
-    /**
-     * 对查询在串中的位置计算（适用于拼音串中没有空格的情况）
-     */
-    public int[] getBoldPosition(String result, String queryWord) {
-        int[] position = new int[2];
-        String[] oneLine = result.split("，");
-
-        // 中文
-        if (PatternMatchUtil.isChinese(queryWord.charAt(0))) {
-            position[0] = oneLine[0].indexOf(queryWord.charAt(0));
-            position[1] = oneLine[0].indexOf(queryWord.charAt(queryWord.length() - 1));
-        } else {
-            // 尝试匹配全拼
-            if (oneLine[1].contains(queryWord)) {
-                // 中文占位+"," 因为是字母所有都是前缀匹配
-                position[0] = oneLine[0].length() + 1;
-                position[1] = position[0] + queryWord.length() - 1;
-            } else { // 简拼匹配
-                position[0] = oneLine[0].length() + 1 + oneLine[1].length() + 1;
-                position[1] = oneLine[0].length() + 1 + oneLine[1].length() + 1 + queryWord.length() - 1;
-            }
-        }
-        return position;
-    }
-
-
 }
