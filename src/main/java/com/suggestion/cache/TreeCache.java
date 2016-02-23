@@ -102,6 +102,7 @@ public class TreeCache {
         // 插入汉字
         insertContentToTree(word, ruleId);
         // 插入拼音
+        pinyin = pinyin.replace(" ","");
         insertContentToTree(pinyin, ruleId);
         // 插入简拼
         insertContentToTree(simplePinYin, ruleId);
@@ -115,8 +116,6 @@ public class TreeCache {
         Node curNode = nodeList.get(0).get(0);
         int levelId = 1;
 
-        // 去除空格
-        content = content.replace(" ", "");
         // 一个一个节点插入
         char[] characterArr = content.toCharArray();
         for (int i = 0; i < characterArr.length; i++) {
@@ -125,22 +124,23 @@ public class TreeCache {
 
             // 查看其是否已经存在
             int index = Collections.binarySearch(curNode.pathList, pathCharacterCode);
-            if (index < 0) { // 不存在，则插入新节点,更新当前节点指向
+            // 不存在插入新节点更新当前节点指向,存在直接当前节点
+            if (index < 0) {
                 // 节点Id获取 每个level从0开始
                 int nodeId = 0;
                 if (nodeList.size() > levelId) {
                     nodeId = nodeList.get(levelId).size();
                 }
 
+                // 插入节点构造 尾节点增加匹配ruleList
                 Node tmpInsertNode = new Node(nodeId);
                 Path tmpPath = new Path(pathCharacterCode, nodeId);
                 tmpInsertNode.tmpValue = Character.toLowerCase(curCharacter);
-
-                // 结束字
                 if (i == characterArr.length - 1) {
                     tmpInsertNode.matchRuleIdList.add(ruleId);
                 }
 
+                // 当前level还没有list新增并添加节点, 已经存在在该level的List直接插入节点
                 if (nodeList.size() < levelId + 1) {
                     List<Node> tmpList = Lists.newArrayList();
                     tmpList.add(tmpInsertNode);
@@ -151,7 +151,7 @@ public class TreeCache {
 
                 curNode.pathList.add(Math.abs(index + 1), tmpPath);
                 curNode = tmpInsertNode;
-            } else { // 存在 更新当前节点
+            } else {
                 // 下一节点的nodeId
                 int nextNodeId = curNode.pathList.get(index).toNodeId;
                 curNode = nodeList.get(levelId).get(nextNodeId);
