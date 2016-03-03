@@ -79,6 +79,9 @@ public class IndexUpdateService {
         }).start();
     }
 
+    /**
+     * 读取文件建树
+     */
     private void loadFromFile(String fileName) {
 
         log.info("文件有变化，正在重新生成新的树");
@@ -90,34 +93,31 @@ public class IndexUpdateService {
         //搜索树缓存设置
         indexService.setTreeCache(treeCache);
 
-        recordLog(stopwatch, treeCache);
+        // 日志纪录
+        log.info(" \n 树的层数为：" + treeCache.getNodeList().size());
+        log.info("树更新完毕,耗时(毫秒)：" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
-    /**
-     * 读取文件建树
-     */
     private TreeCache buildTreeCache(String fileName) {
 
-
+        //初始化
         TreeCache treeCache = TreeCache.builder().build();
         treeCache.init();
 
-        List<Rule> allRuleList = Lists.newArrayList();
         FileReader fileReader = null;
+
         try {
-
-
             fileReader = new FileReader(new File(fileName));
             LineIterator it = IOUtils.lineIterator(fileReader);
             while (it.hasNext()) {
                 String content = it.nextLine();
                 String[] line = normalizeLine(content);
                 if (line == null) continue;
-                // 插入word 包括全拼 简拼
-                int ruleId = treeCache.insertLineToTree(line);
+                // 插入行数据（word 全拼 简拼）
+                treeCache.insertLineToTree(line);
             }
 
-            // 设置节点匹配字节点的ruleList
+            // 设置所有节点匹配的ruleList
             treeCache.procNodeMatchRuleList();
 
         } catch (Exception e) {
@@ -129,7 +129,9 @@ public class IndexUpdateService {
         return treeCache;
     }
 
-    //每行数据归一化处理， 不符合要求的过滤掉
+    /**
+     * 每行数据归一化处理， 不符合要求的过滤掉
+     */
     private String[] normalizeLine(String content) {
         if (StringUtils.isEmpty(content)) {
             return null;
@@ -150,14 +152,6 @@ public class IndexUpdateService {
         }
 
         return line;
-    }
-
-    private void recordLog(Stopwatch stopwatch, TreeCache treeCache) {
-        log.info(Joiner.on("\n").join(treeCache.getNodeList()));
-        log.info(" \n 树的层数为：" + treeCache.getNodeList().size());
-
-        log.info(Joiner.on("\n").withKeyValueSeparator("=>").join(treeCache.getCharacterCodeMap()));
-        log.error("树更新完毕,耗时(毫秒)：" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
 }

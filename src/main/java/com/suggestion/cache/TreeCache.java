@@ -44,6 +44,7 @@ public class TreeCache {
         characterCodeMap = Maps.newHashMap();
         nodeList = Lists.newArrayList();
         ruleList = Lists.newArrayList();
+
         // 26字母的code存储
         String abcStr = "abcdefgfhijklmnopqrstuvwxyz";
         for (char tmp : abcStr.toCharArray()) {
@@ -83,7 +84,7 @@ public class TreeCache {
     // －－－－－－－－－－－－－－－建树－－－－－－－－－－－－－－－－－
 
     /**
-     * 插入词语
+     * 插入一条数据
      */
     public int insertLineToTree(String[] line) {
 

@@ -1,8 +1,10 @@
 package com.suggestion.web.controller;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.suggestion.service.IndexService;
 import com.suggestion.utils.Constants;
+import lombok.extern.log4j.Log4j2;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Auther wanglp
@@ -18,7 +21,7 @@ import java.util.List;
  * @Email wanglp840@nenu.edu.cn
  */
 
-
+@Log4j2
 @Controller
 @RequestMapping(value = Constants.INDEX_SEARCH)
 public class SearchController {
@@ -35,7 +38,13 @@ public class SearchController {
         // 处理后的查询串
         queryWord = indexService.getTheHandledQuery(queryWord);
         if (!queryWord.equals("")) {
+
+            log.info("查询检索开始!");
+            Stopwatch stopwatch = Stopwatch.createStarted();
+
             resultList = indexService.search(queryWord);
+
+            log.info("检索完毕,耗时(毫秒):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
         }
 
 

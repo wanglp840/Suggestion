@@ -1,10 +1,14 @@
 $(function(){
+	setTimeout(function(){
+		localPro();
+	},300);
+	
 	$('#J_searchInp').on('keyup', function(e){
 		var queryWord = $(this).val();
 		if(queryWord.length != 0){
 			$.ajax({
 				url: requestUrl,  //搜索关键字请求
-				// url: 'http://localhost/search.json',  //搜索关键字请求
+				//url: 'http://localhost/search.json',  //搜索关键字请求
 				type: 'get',//请求方式
 				dataType: 'json',
 				data: {
@@ -19,7 +23,7 @@ $(function(){
 						}else{
 							hidePro();
 						}
-
+						
 					}
 				}
 			})
@@ -29,8 +33,8 @@ $(function(){
 	});
 
 	$('#J_listHolder').delegate('li', 'click', function(e){
-		var
-			keyword = $(this).text();
+		var 
+		    keyword = $(this).text();
 		$('#J_searchInp').val(keyword);
 		$('#J_searchForm').submit();
 	});
@@ -51,6 +55,7 @@ $(function(){
 
 function renderPro(data, queryWord){
 	var str = '';
+	var jsonArrKeyWord = 'strContent';
 
 	$.each(data, function(index, item){
 		var otherStr = item.strContent,
@@ -73,9 +78,9 @@ function renderPro(data, queryWord){
 }
 
 function localPro(){
-	var
-		position = $('#J_searchInp').offset()
-	topVal = position.top,
+	var 
+		position = $('#J_searchInp').offset(),
+		topVal = position.top,
 		left = position.left,
 		height = $('#J_searchInp').height(),
 		proTop = topVal + height + 20;
@@ -83,9 +88,9 @@ function localPro(){
 }
 
 function showPro(){
-	if($('#J_promptHolder').hasClass('has-show')){
-		localPro();
-	}
+	// if($('#J_promptHolder').hasClass('has-show')){
+	// 	localPro();
+	// }
 	$('#J_promptHolder').show();
 }
 function hidePro(){

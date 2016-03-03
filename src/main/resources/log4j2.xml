@@ -10,6 +10,7 @@
         <RollingRandomAccessFile name="console"
                                  fileName="${LOG_HOME}/console.log"
                                  filePattern="${LOG_HOME}/console-%d{yyyy-MM-dd}-%i.log.gz">
+            <param name="Encoding" value="UTF-8" />
             <PatternLayout
                     pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n"/>
             <Policies>
@@ -23,6 +24,7 @@
         <RollingRandomAccessFile name="stdinfo"
                                  fileName="${LOG_HOME}/stdinfo.log"
                                  filePattern="${LOG_HOME}/stdinfo-%d{yyyy-MM-dd}-%i.log.gz">
+            <param name="Encoding" value="UTF-8" />
             <PatternLayout
                     pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n"/>
             <Policies>

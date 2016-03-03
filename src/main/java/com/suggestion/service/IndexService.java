@@ -1,6 +1,7 @@
 package com.suggestion.service;
 
 import com.google.common.base.Function;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.suggestion.cache.TreeCache;
 import com.suggestion.pojo.Node;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Auther wanglp
@@ -53,11 +55,15 @@ public class IndexService {
             matchedRule.addAll(middleSearch(queryCodeList));
         }
 
-        return transformResult(matchedRule);
+        List<String> resultList = transformResult(matchedRule);
+        return resultList;
     }
 
+    /**
+     * 排序转换结果
+     */
     private List<String> transformResult(List<Integer> allMatchRuleList) {
-        // 查询类型为所有 或者 长度为0
+        // 长度为0
         if (allMatchRuleList.size() == 0) {
             return Lists.newArrayList();
         }
@@ -78,7 +84,7 @@ public class IndexService {
         });
 
 
-        // 转换排序结果返回
+        // 转换排序结果 返回
         return Lists.transform(noPeatList, new Function<Integer, String>() {
             public String apply(Integer input) {
                 return treeCache.getRuleList().get(input).getExpression();
@@ -158,7 +164,7 @@ public class IndexService {
     // －－－－－－－－－－－－－－－其他－－－－－－－－－－－－－－
 
     /**
-     * 将汉字转换为code
+     * queryWord转换为codeList
      */
     private List<Integer> toCharacterCodeList(String word) {
         List<Integer> codeList = Lists.newArrayList();
